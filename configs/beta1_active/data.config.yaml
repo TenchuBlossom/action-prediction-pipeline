@@ -1,0 +1,45 @@
+consumer:
+  consumer_name: 'beta_consumer'
+
+data_sources:
+  - name: '3sn6'
+    metadata: 'raw data from active - no filter - without proximal or vdw clash - after common'
+    src: "../data/raw/ACTIVE/no-filter/3sn6/WITHOUT proximal+vdw clash/AFTER common+unique"
+
+  - name: '4lde'
+    metadata: 'raw data from active - no filter - without proximal or vdw clash - after common'
+    src: "../data/raw/ACTIVE/no-filter/4lde/WITHOUT proximal+vdw clash/AFTER common+unique"
+
+  - name: '5jqh'
+    metadata: 'raw data from active - no filter - without proximal or vdw clash - after common'
+    src: "../data/raw/ACTIVE/no-filter/5jqh/WITHOUT proximal+vdw clash/AFTER common+unique"
+
+transforms:
+  clean_features:
+    exceptions:
+      - Action
+      - Ligand_Pose
+      - Ligand_Pose2
+
+  merge:
+    output_name: merged-data
+    keep_datasets: true
+
+  remove_features:
+    search_params:
+      - Clash
+      - Proximal
+      - Ligand_Pose
+
+  change_nans:
+    value: 0
+
+provider:
+  provider_name: beta_provider
+  dataset_name: merged-data
+  test_size: 0.05
+  y_name: Action
+  random_seed: 42
+  shuffle: true
+  stratify: true
+  to_numpy: true
