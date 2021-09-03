@@ -3,14 +3,6 @@ import tools.file_system as fs
 from tqdm import tqdm
 
 
-def compile_config(src) -> dict:
-    with open(src, mode='r') as yam_file:
-        config = yaml.load(yam_file, Loader=yaml.FullLoader)
-
-    print('Config successfully compiled')
-    return config
-
-
 def compile_transforms(config: dict) -> list:
 
     requested_transforms = config.get('transforms', None)
