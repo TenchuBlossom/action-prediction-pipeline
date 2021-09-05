@@ -6,13 +6,14 @@ import tools.consumer_tools as ct
 
 class Consumer:
 
-    def __init__(self, config_src: str):
-        self.config = ct.compile_config(config_src)
+    def __init__(self, config_src):
+
+        self.config = fs.compile_config(config_src)
         self.transform_chain = ct.compile_transforms(self.config)
         self.provider = ct.compile_provider(self.config)
-        self.datasets = ct.execute_transforms(self.transform_chain, self.load())
+        self.datasets = ct.execute_transforms(self.transform_chain, self.consume())
 
-    def load(self) -> dict:
+    def consume(self) -> dict:
 
         datasets = dict()
         for data_src in self.config['data_sources']:

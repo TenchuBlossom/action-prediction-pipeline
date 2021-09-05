@@ -1,5 +1,6 @@
 import os
 import importlib
+import yaml
 
 
 def path(pathname: str, root_depth=2) -> str:
@@ -60,6 +61,22 @@ def find_file_type(pathname: str, file_extension: str) -> list:
 def delete_files(files: list):
     for f in files:
         os.remove(f)
+
+
+def compile_config(src) -> dict:
+
+    if type(src) is dict:
+        print('Config successfully compiled')
+        return src
+
+    if type(src) is not str:
+        raise TypeError('src config should be of type str or dict')
+
+    with open(src, mode='r') as yam_file:
+        config = yaml.load(yam_file, Loader=yaml.FullLoader)
+
+    print('Config successfully compiled')
+    return config
 
 
 def load_module(module_uri: str):
