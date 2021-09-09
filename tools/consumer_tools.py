@@ -36,8 +36,7 @@ def compile_provider(config: dict):
     provider_name = provider_config.get('provider_name', None)
     if not provider_name: return None
 
-    module = fs.load_module(module_uri=f'providers.{provider_name}')
-    provider = module.__dict__['Provider'](provider_config)
+    provider = fs.load_module(module_uri=f'providers.{provider_name}', class_name='Provider', config=provider_config)
     print('Provider successfully compiled')
     return provider
 

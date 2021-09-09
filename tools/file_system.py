@@ -79,8 +79,9 @@ def compile_config(src) -> dict:
     return config
 
 
-def load_module(module_uri: str):
-    return importlib.import_module(module_uri)
+def load_module(module_uri: str, class_name: str, config: dict):
+    module = importlib.import_module(module_uri)
+    return module.__dict__[class_name](config)
 
 
 class LoadPythonPackage:

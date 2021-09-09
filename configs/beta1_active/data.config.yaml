@@ -37,7 +37,7 @@ transforms:
 provider:
   provider_name: beta_provider
   dataset_name: merged-data
-  test_size: 0.05
+  test_size: 0.95
   y_name: Action
   random_seed: 42
   shuffle: true

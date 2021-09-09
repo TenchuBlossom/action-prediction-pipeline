@@ -1,0 +1,15 @@
+model:
+  model_name: catboost_classifier
+  parameters:
+    iterations: 5
+
+
+training:
+  method: crossValidation
+  parameters:
+    folds: 5
+    repeats: 5
+    process_type: ray
+    cpus: 6
+    gpus: 0
+
