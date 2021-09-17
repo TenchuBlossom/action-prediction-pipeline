@@ -11,9 +11,9 @@ class Consumer:
         self.config = fs.compile_config(config_src)
         self.transform_chain = ct.compile_transforms(self.config)
         self.provider = ct.compile_provider(self.config)
-        self.datasets = ct.execute_transforms(self.transform_chain, self.consume())
+        self.datasets = None
 
-    def consume(self) -> dict:
+    def consume(self) -> None:
 
         datasets = dict()
         for data_src in self.config['data_sources']:
@@ -26,7 +26,10 @@ class Consumer:
                 dataset_name = f'{name}-{file.split(".")[0]}'
                 datasets[dataset_name] = {'data': data, 'metadata': metadata, 'src': src}
 
-        return datasets
+        self.datasets = datasets
+
+    def transform(self):
+        self.datasets = ct.execute_transforms(self.transform_chain, self.datasets)
 
     def provide(self) -> tuple:
         return self.provider(self.datasets)

@@ -44,8 +44,8 @@ class Provider:
         if to_numpy:
             x_train = x_train.to_numpy()
             x_test = x_test.to_numpy()
-            y_train = y_train.to_numpy()
-            y_test = y_test.to_numpy()
+            y_train = y_train.to_numpy().flatten()
+            y_test = y_test.to_numpy().flatten()
             feature_names = np.array(feature_names)
 
         return x_train, x_test, y_train, y_test, feature_names

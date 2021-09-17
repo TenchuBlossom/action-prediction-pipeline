@@ -1,5 +1,5 @@
 consumer:
-  consumer_name: 'beta_consumer'
+  name: BetaConsumer
 
 data_sources:
   - name: '3sn6'
@@ -35,9 +35,9 @@ transforms:
     value: 0
 
 provider:
-  provider_name: beta_provider
+  name: BetaProvider
   dataset_name: merged-data
-  test_size: 0.05
+  test_size: 0.95
   y_name: Action
   random_seed: 42
   shuffle: true
