@@ -1,0 +1,32 @@
+
+  trainable:
+    name: BetaTrainable
+
+    splitter:
+      name: SK_KFoldSplitter
+      parameters:
+        n_splits: 5
+        random_state: 42
+        shuffle: true
+
+    validator:
+      name: SK_CrossValidate
+      parameters:
+        n_jobs: 4
+        scoring:
+          - MCC
+
+    model:
+      name: CatboostClassifier
+      parameters:
+        n_estimators: 4
+        max_depth: 3
+        allow_writing_files: false
+
+  diagnostics:
+    - ConfusionMatrix
+    - LearningCurve
+    - Descriptives
+    - ConfidenceInterval
+    - Shaps
+
