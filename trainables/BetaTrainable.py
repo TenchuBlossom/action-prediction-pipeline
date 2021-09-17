@@ -11,11 +11,25 @@ class Trainable:
         self.splitter = tt.compile_splitter(config)
         self.model = tt.compile_model(config)
         self.validator = tt.compile_validator(config, self.splitter)
-        self.results = None
+        self.diagnostic_chain = tt.compile_diagnostics(config)
 
-    def fit(self, x, y):
+        self.train_results = None
+        self.predict_results = None
+        self.test_results = None
+
+    def train(self, x, y):
         results = self.validator(self.model, x, y)
-        self.results = results
+        self.train_results = results
         return results
+
+    def predict(self, x, y):
+        pass
+
+    def diagnose(self):
+
+        for diagnostic in self.diagnostic_chain:
+            pass
+
+
 
 

@@ -10,5 +10,16 @@ class Validator:
     def __init__(self, config):
         self.config = config
 
+    # TODO Validators need to return the results of each fold, the model y_predictions and y_trues
     def __call__(self, model, x, y) -> dict:
-        return cross_validate(model, x, y, **self.config)
+
+        # TODO need to organise data into consistent format
+        scores = cross_validate(model, x, y, **self.config)
+
+        # if true then use estimators to also get predictons
+        return_estimator = pyt.get(self.config, [cs.trainable, cs.validator, cs.parameters, 'return_estimator'])
+        if not return_estimator:
+            return dict(scores=scores, predictions=None)
+
+
+

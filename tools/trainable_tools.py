@@ -25,7 +25,8 @@ def compile_validator(config: dict, splitter):
 
     if not validator_name or not parameters: return None
 
-    if 'ConfusionMatrix' in pyt.get(config, [cs.diagnostics]):
+    diagnostics = pyt.get(config, [cs.diagnostics])
+    if 'ConfusionMatrix' in diagnostics:
         parameters = pyt.put(parameters, True, ['return_estimator'])
 
     parameters = pyt.put(parameters, splitter.splitter, ['cv'])
@@ -53,15 +54,34 @@ def compile_scorers(config: dict):
 
     scoring = pyt.get(config, [cs.trainable, cs.validator, cs.parameters, 'scoring'])
 
-    if not scoring: return []
+    if not scoring: return None
 
     scorer_chain = dict()
-    for module, transform in fs.LoadPythonPackage(scoring, package_name=cs.scorers):
+    for module, module_name in fs.LoadPythonPackage(scoring, package_name=cs.scorers):
 
         if module is None: continue
         module = module.__dict__[cs.Scorer]
         module = module().scorer
-        scorer_chain[transform] = module
+        scorer_chain[module_name] = module
 
     print(f'{cs.tickIcon} Scorers successfully compiled')
     return scorer_chain
+
+
+def compile_diagnostics(config: dict):
+
+    diagnostics = pyt.get(config, [cs.diagnostics])
+
+    if not diagnostics: return None
+
+    diagnostic_chain = dict()
+    for module, module_name in fs.LoadPythonPackage(diagnostics, package_name=cs.diagnostics):
+
+        if module is None: continue
+        module = module.__dict__[cs.Diagnostic]
+        module = module()
+        diagnostic_chain[module_name] = dict(function=module, results=None)
+
+    print(f'{cs.tickIcon} Diagnostics successfully compiled')
+    return diagnostic_chain
+

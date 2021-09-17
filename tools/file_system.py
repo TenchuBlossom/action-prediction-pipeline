@@ -1,6 +1,8 @@
 import os
 import importlib
 import yaml
+from tools.constants import Constants
+cs = Constants()
 
 
 def path(pathname: str, root_depth=2) -> str:
@@ -41,7 +43,7 @@ def make_dir_chain(pathname: str, dir_chain: list) -> tuple:
     return pathname
 
 
-def get_dirs(pathname: str) -> list:
+def get_dirs(pathname: str) -> tuple:
 
     pathname = path(pathname)
     dirs = []
@@ -101,6 +103,12 @@ class LoadPythonPackage:
         if self.idx < self.idx_limit:
 
             if f'{self.request_modules[self.idx]}.py' not in self.actual_modules:
+                out = None, self.request_modules[self.idx]
+                self.idx += 1
+                return out
+
+            file_path = path(os.path.join(self.package_name, f'{self.request_modules[self.idx]}.py'))
+            if os.path.getsize(path(file_path)) == 0:
                 out = None, self.request_modules[self.idx]
                 self.idx += 1
                 return out

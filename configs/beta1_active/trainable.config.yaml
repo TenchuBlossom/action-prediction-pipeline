@@ -1,6 +1,7 @@
 
   trainable:
     name: BetaTrainable
+    test_model: true
 
     splitter:
       name: SK_KFoldSplitter
