@@ -22,6 +22,7 @@ class TrainPipeline:
 
 
 if __name__ == "__main__":
+
     from trainables.BetaTrainable import Trainable
 
     d_src = '../configs/beta1_active/data.config.yaml'

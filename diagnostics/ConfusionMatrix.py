@@ -19,7 +19,7 @@ class Diagnostic:
         y_true = pyt.get(results, ['y_true'])
         labels = pyt.get(self.config, ['labels'])
         label_names = [i[1] for i in labels.items()] if labels else None
-        normalize = pyt.get(self.config, ['normalize'])
+        normalize = str(pyt.get(self.config, ['normalize'])).lower() if pyt.get(self.config, ['normalize']) else None
 
         if y_preds is None or y_true is None:
             raise KeyError(
