@@ -14,21 +14,33 @@ class Trainable:
         self.diagnostic_chain = tt.compile_diagnostics(config)
 
         self.train_results = None
-        self.predict_results = None
-        self.test_results = None
+        self.evaluation_results = None
+
+        self.train_diagnostics = None
+        self.eval_diagnostics = None
 
     def train(self, x, y):
-        results = self.validator(self.model, x, y)
-        self.train_results = results
-        return results
+        self.train_results = self.validator(self.model, x, y)
 
-    def predict(self, x, y):
+    def evaluate(self, x, y):
         pass
 
     def diagnose(self):
 
-        for diagnostic in self.diagnostic_chain:
-            pass
+        if self.train_results is None and self.evaluation_results is None:
+            print()
+            return
+
+        if self.train_results is not None:
+            self.train_diagnostics = tt.execute_sync_diagnostics(self.train_results, self.diagnostic_chain)
+            print()
+
+        if self.evaluation_results is not None:
+            self.eval_diagnostics = tt.execute_sync_diagnostics(self.evaluation_results, self.diagnostic_chain)
+            print()
+
+
+
 
 
 

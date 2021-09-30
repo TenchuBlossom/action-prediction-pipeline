@@ -1,6 +1,8 @@
 import tools.py_tools as pyt
 import tools.file_system as fs
 from tools.constants import Constants
+import inspect
+import tools.file_system as fs
 
 cs = Constants()
 
@@ -25,7 +27,7 @@ def compile_validator(config: dict, splitter):
 
     if not validator_name or not parameters: return None
 
-    diagnostics = pyt.get(config, [cs.diagnostics])
+    diagnostics = list(pyt.get(config, [cs.diagnostics]).keys())
     if 'ConfusionMatrix' in diagnostics:
         parameters = pyt.put(parameters, True, ['return_estimator'])
 
@@ -74,14 +76,27 @@ def compile_diagnostics(config: dict):
 
     if not diagnostics: return None
 
-    diagnostic_chain = dict()
-    for module, module_name in fs.LoadPythonPackage(diagnostics, package_name=cs.diagnostics):
+    diagnostic_chain = []
+    for module, module_name in fs.LoadPythonPackage(list(diagnostics.keys()), package_name=cs.diagnostics):
 
         if module is None: continue
         module = module.__dict__[cs.Diagnostic]
-        module = module()
-        diagnostic_chain[module_name] = dict(function=module, results=None)
+        parameters = pyt.get(diagnostics, [module_name, 'parameters'])
+        module = module(parameters)
+        diagnostic_chain.append(module)
 
     print(f'{cs.tickIcon} Diagnostics successfully compiled')
     return diagnostic_chain
+
+
+def execute_sync_diagnostics(results: dict, execution_chain: dict, silent=True) -> dict:
+
+    diagnostics_results = dict()
+    for diagnostic in execution_chain:
+        name = fs.get_class_filename(diagnostic)
+        results = diagnostic(results)
+        diagnostics_results[name] = results
+
+        if silent: continue
+        print()
 

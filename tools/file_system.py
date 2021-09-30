@@ -2,6 +2,7 @@ import os
 import importlib
 import yaml
 from tools.constants import Constants
+import inspect
 cs = Constants()
 
 
@@ -84,6 +85,10 @@ def compile_config(src) -> dict:
 def load_module(module_uri: str, class_name: str, config: dict):
     module = importlib.import_module(module_uri)
     return module.__dict__[class_name](config)
+
+
+def get_class_filename(class_object):
+    return inspect.getfile(class_object.__class__).split('/')[-1].replace('.py', '')
 
 
 class LoadPythonPackage:
