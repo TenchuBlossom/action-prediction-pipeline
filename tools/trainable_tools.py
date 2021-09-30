@@ -1,6 +1,8 @@
 import tools.py_tools as pyt
 import tools.file_system as fs
 from tools.constants import Constants
+import inspect
+import tools.file_system as fs
 
 cs = Constants()
 
@@ -25,7 +27,8 @@ def compile_validator(config: dict, splitter):
 
     if not validator_name or not parameters: return None
 
-    if 'ConfusionMatrix' in pyt.get(config, [cs.diagnostics]):
+    diagnostics = list(pyt.get(config, [cs.diagnostics]).keys())
+    if 'ConfusionMatrix' in diagnostics:
         parameters = pyt.put(parameters, True, ['return_estimator'])
 
     parameters = pyt.put(parameters, splitter.splitter, ['cv'])
@@ -53,15 +56,47 @@ def compile_scorers(config: dict):
 
     scoring = pyt.get(config, [cs.trainable, cs.validator, cs.parameters, 'scoring'])
 
-    if not scoring: return []
+    if not scoring: return None
 
     scorer_chain = dict()
-    for module, transform in fs.LoadPythonPackage(scoring, package_name=cs.scorers):
+    for module, module_name in fs.LoadPythonPackage(scoring, package_name=cs.scorers):
 
         if module is None: continue
         module = module.__dict__[cs.Scorer]
         module = module().scorer
-        scorer_chain[transform] = module
+        scorer_chain[module_name] = module
 
     print(f'{cs.tickIcon} Scorers successfully compiled')
     return scorer_chain
+
+
+def compile_diagnostics(config: dict):
+
+    diagnostics = pyt.get(config, [cs.diagnostics])
+
+    if not diagnostics: return None
+
+    diagnostic_chain = []
+    for module, module_name in fs.LoadPythonPackage(list(diagnostics.keys()), package_name=cs.diagnostics):
+
+        if module is None: continue
+        module = module.__dict__[cs.Diagnostic]
+        parameters = pyt.get(diagnostics, [module_name, 'parameters'])
+        module = module(parameters)
+        diagnostic_chain.append(module)
+
+    print(f'{cs.tickIcon} Diagnostics successfully compiled')
+    return diagnostic_chain
+
+
+def execute_sync_diagnostics(results: dict, execution_chain: dict, silent=True) -> dict:
+
+    diagnostics_results = dict()
+    for diagnostic in execution_chain:
+        name = fs.get_class_filename(diagnostic)
+        results = diagnostic(results)
+        diagnostics_results[name] = results
+
+        if silent: continue
+        print()
+

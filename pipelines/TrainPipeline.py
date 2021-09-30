@@ -33,8 +33,9 @@ if __name__ == "__main__":
     pipe.consumer.transform()
     x_train, x_test, y_train, y_test, feature_names = pipe.consumer.provide()
 
-    pipe.trainable.fit(x_train, y_train)
-    pipe.trainable.diagnostics(x_train, y_train)
+    pipe.trainable.train(x_train, y_train)
+    pipe.trainable.evaluate(x_test, y_test)
+    pipe.trainable.diagnose()
 
 
     a = 0

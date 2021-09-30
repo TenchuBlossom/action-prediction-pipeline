@@ -29,6 +29,7 @@ class Constants:
         self.parameters = 'parameters'
         self.scorers = 'scorers'
         self.diagnostics = 'diagnostics'
+        self.Diagnostic = 'Diagnostic'
         self.trainable = 'trainable'
         self.consumer = 'consumer'
         self.data_sources = 'data_sources'

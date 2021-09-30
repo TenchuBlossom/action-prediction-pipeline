@@ -1,6 +1,7 @@
 
   trainable:
     name: BetaTrainable
+    test_model: true
 
     splitter:
       name: SK_KFoldSplitter
@@ -24,9 +25,26 @@
         allow_writing_files: false
 
   diagnostics:
-    - ConfusionMatrix
-    - LearningCurve
-    - Descriptives
-    - ConfidenceInterval
-    - Shaps
+
+    ConfusionMatrix:
+      parameters:
+        plot: true
+        normalize: true
+        labels:
+          0: antagonist
+          1: agonist
+
+    LearningCurve:
+      plot: true
+
+    Desriptives:
+      plot: true
+      mean: true
+      median: true
+      std: true
+      confidenceInterval: true
+
+    Shaps:
+      plot: true
+
 
