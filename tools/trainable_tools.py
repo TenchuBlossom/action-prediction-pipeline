@@ -1,8 +1,7 @@
 import tools.py_tools as pyt
 import tools.file_system as fs
 from tools.constants import Constants
-import inspect
-import tools.file_system as fs
+from tqdm import tqdm
 
 cs = Constants()
 
@@ -89,14 +88,13 @@ def compile_diagnostics(config: dict):
     return diagnostic_chain
 
 
-def execute_sync_diagnostics(results: dict, execution_chain: dict, silent=True) -> dict:
+def execute_sync_diagnostics(results: dict, execution_chain: dict, print_txt='') -> dict:
 
     diagnostics_results = dict()
-    for diagnostic in execution_chain:
+    for diagnostic in tqdm(execution_chain, desc=f"{cs.tickIcon} {print_txt}", colour="WHITE"):
         name = fs.get_class_filename(diagnostic)
-        results = diagnostic(results)
-        diagnostics_results[name] = results
+        out = diagnostic(results)
+        diagnostics_results[name] = out
 
-        if silent: continue
-        print()
+    return diagnostics_results
 

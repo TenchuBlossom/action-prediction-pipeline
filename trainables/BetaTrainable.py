@@ -25,19 +25,19 @@ class Trainable:
     def evaluate(self, x, y):
         pass
 
-    def diagnose(self):
+    def diagnose(self, sync=True):
 
         if self.train_results is None and self.evaluation_results is None:
             print()
             return
 
         if self.train_results is not None:
-            self.train_diagnostics = tt.execute_sync_diagnostics(self.train_results, self.diagnostic_chain)
-            print()
+            txt = 'Applying training diagnostics'
+            self.train_diagnostics = tt.execute_sync_diagnostics(self.train_results, self.diagnostic_chain, txt)
 
         if self.evaluation_results is not None:
-            self.eval_diagnostics = tt.execute_sync_diagnostics(self.evaluation_results, self.diagnostic_chain)
-            print()
+            txt = 'Applying evaluation diagnostics'
+            self.eval_diagnostics = tt.execute_sync_diagnostics(self.evaluation_results, self.diagnostic_chain, txt)
 
 
 
