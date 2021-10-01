@@ -38,5 +38,5 @@ if __name__ == "__main__":
     pipe.trainable.evaluate(x_test, y_test)
     pipe.trainable.diagnose()
 
-
+    print(pipe.trainable.train_diagnostics['Descriptives']['MCC'])
     a = 0
