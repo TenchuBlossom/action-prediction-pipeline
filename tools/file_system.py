@@ -3,6 +3,7 @@ import importlib
 import yaml
 from tools.constants import Constants
 import inspect
+import sys
 cs = Constants()
 
 
@@ -88,7 +89,8 @@ def load_module(module_uri: str, class_name: str, config: dict):
 
 
 def get_class_filename(class_object):
-    return inspect.getfile(class_object.__class__).split('/')[-1].replace('.py', '')
+    delimeter = '/' if sys.platform != 'win32' else '\\'
+    return inspect.getfile(class_object.__class__).split(delimeter)[-1].replace('.py', '')
 
 
 class LoadPythonPackage:
