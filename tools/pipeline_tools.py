@@ -10,7 +10,7 @@ def compile_consumer(config: dict):
     if not consumer_name: return None
 
     consumer = fs.load_module(module_uri=f'{cs.consumers_uri}{consumer_name}', class_name=cs.Consumer, config=config)
-    print('Consumer successfully compiled')
+    print(f'{cs.tickIcon} Consumer successfully compiled')
     return consumer
 
 

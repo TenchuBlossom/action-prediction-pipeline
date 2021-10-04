@@ -18,7 +18,7 @@ class Consumer:
         datasets = dict()
         for data_src in self.config['data_sources']:
             name = data_src['name']
-            src = data_src['src']
+            src = fs.path(data_src['src'])
             metadata = data_src['metadata']
 
             for file in fs.find_file_type(fs.path(src), '.csv'):

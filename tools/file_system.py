@@ -2,6 +2,7 @@ import os
 import importlib
 import yaml
 from tools.constants import Constants
+import tools.py_tools as pyt
 import inspect
 import sys
 cs = Constants()
@@ -70,16 +71,17 @@ def delete_files(files: list):
 def compile_config(src) -> dict:
 
     if type(src) is dict:
-        print('Config successfully compiled')
         return src
 
     if type(src) is not str:
         raise TypeError('src config should be of type str or dict')
 
+    src = path(src)
     with open(src, mode='r') as yam_file:
         config = yaml.load(yam_file, Loader=yaml.FullLoader)
 
-    print('Config successfully compiled')
+    config = pyt.put(config, os.path.basename(src), ['file_name'])
+    print(f'{cs.tickIcon} {pyt.get(config, ["file_name"])} successfully compiled')
     return config
 
 

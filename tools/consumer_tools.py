@@ -19,7 +19,7 @@ def compile_transforms(config: dict) -> list:
         module = module(requested_transforms[transform])
         transform_chain.append(module)
 
-    print('Transforms successfully compiled')
+    print(f'{cs.tickIcon} Transforms successfully compiled')
     return transform_chain
 
 
@@ -39,7 +39,7 @@ def compile_provider(config: dict):
     if not provider_name: return None
 
     provider = fs.load_module(module_uri=f'providers.{provider_name}', class_name=cs.Provider, config=provider_config)
-    print('Provider successfully compiled')
+    print(f'{cs.tickIcon} Provider successfully compiled')
     return provider
 
 

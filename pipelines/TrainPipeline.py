@@ -18,25 +18,21 @@ class TrainPipeline:
         self.analytics = None
 
     def execute(self):
-        pass
+        self.consumer.consume()
+        self.consumer.transform()
+        x_train, x_test, y_train, y_test, feature_names = self.consumer.provide()
+
+        self.trainable.train(x_train, y_train)
+        self.trainable.evaluate(x_test, y_test)
+        self.trainable.diagnose()
 
 
 if __name__ == "__main__":
-
-    from trainables.BetaTrainable import Trainable
 
     d_src = '../configs/beta1_active/data.config.yaml'
     m_src = '../configs/beta1_active/trainable.config.yaml'
     a_src = ''
 
     pipe = TrainPipeline(d_src, m_src, a_src)
-    pipe.consumer.consume()
-    pipe.consumer.transform()
-    x_train, x_test, y_train, y_test, feature_names = pipe.consumer.provide()
-
-    pipe.trainable.train(x_train, y_train)
-    pipe.trainable.evaluate(x_test, y_test)
-    pipe.trainable.diagnose()
-
+    pipe.execute()
     print(pipe.trainable.train_diagnostics['Descriptives']['MCC'])
-    a = 0

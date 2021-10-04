@@ -1,5 +1,6 @@
 from tools.constants import Constants
 import tools.trainable_tools as tt
+from alive_progress import alive_bar
 cs = Constants()
 
 
@@ -20,7 +21,8 @@ class Trainable:
         self.eval_diagnostics = None
 
     def train(self, x, y):
-        self.train_results = self.validator(self.model, x, y)
+        with alive_bar(title="Executing Training Procedure") as bar:
+            self.train_results = self.validator(self.model, x, y)
 
     def evaluate(self, x, y):
         pass
