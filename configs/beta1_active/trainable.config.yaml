@@ -23,6 +23,20 @@ trainable:
     parameters:
       n_estimators: 1150
       max_depth: 8
+      use_label_encoder: False
+      eval_metric: logloss
+      gamma: 0.2458
+      tree_method: gpu_hist
+      colsample_bytree: 0.466
+      eta: 0.4306
+      booster: gbtree
+      learning_rate: 0.05873
+      min_child_weight: 1.246
+      reg_lambda: 2.904
+      reg_alpha: 0.06229
+      subsample: 0.7532
+      max_delta_step: 7
+      scale_pos_weight: 1
 
 
 diagnostics:
