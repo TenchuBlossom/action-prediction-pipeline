@@ -4,15 +4,15 @@ consumer:
 data_sources:
   - name: '3sn6'
     metadata: 'raw data from active - no filter - without proximal or vdw clash - after common'
-    src: "../data/raw/ACTIVE/no-filter/3sn6/WITHOUT proximal+vdw clash/AFTER common+unique"
+    src: "../data/beta1-legacy/raw/ACTIVE/no-filter/3sn6/WITHOUT proximal+vdw clash/AFTER common+unique"
 
   - name: '4lde'
     metadata: 'raw data from active - no filter - without proximal or vdw clash - after common'
-    src: "../data/raw/ACTIVE/no-filter/4lde/WITHOUT proximal+vdw clash/AFTER common+unique"
+    src: "../data/beta1-legacy/raw/ACTIVE/no-filter/4lde/WITHOUT proximal+vdw clash/AFTER common+unique"
 
   - name: '5jqh'
     metadata: 'raw data from active - no filter - without proximal or vdw clash - after common'
-    src: "../data/raw/ACTIVE/no-filter/5jqh/WITHOUT proximal+vdw clash/AFTER common+unique"
+    src: "../data/beta1-legacy/raw/ACTIVE/no-filter/5jqh/WITHOUT proximal+vdw clash/AFTER common+unique"
 
 transforms:
   clean_features:
