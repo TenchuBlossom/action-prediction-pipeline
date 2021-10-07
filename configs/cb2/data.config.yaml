@@ -19,6 +19,8 @@ data_sources:
 
 transforms:
 
+  preview:
+
   clean_features:
     exceptions:
       - Action
@@ -44,11 +46,17 @@ transforms:
     value: 0
 
 provider:
-  name: BetaProvider
+  name: CB2Provider
   dataset_name: merged-data
-  preview_samples: 10_000
+  preview_frac: 0.1
   test_size: 0.05
-  y_name: Action
+  classes:
+    - 0
+    - 1
+  y_names:
+    - CB2_CAMP
+    - CB2_beta_Arrestin
+  y_target: CB2_CAMP
   random_seed: 42
   shuffle: true
   stratify: true

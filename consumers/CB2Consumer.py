@@ -22,7 +22,7 @@ class Consumer:
             src = fs.path(data_src['src'])
             metadata = data_src['metadata']
 
-            data = dd.read_csv(src,  sep="\t")
+            data = dd.read_csv(src,  sep="\t", blocksize="10MB", dtype={'CB2_CAMP': 'object', 'CB2_beta_Arrestin': 'object'})
             dataset_name = name
             datasets[dataset_name] = {'data': data, 'metadata': metadata, 'src': src}
 
@@ -42,4 +42,5 @@ if __name__ == '__main__':
     consumer = Consumer(fs.path('../configs/cb2/data.config.yaml'))
     consumer.consume()
     consumer.transform()
+    out = consumer.provide()
     a = 0
