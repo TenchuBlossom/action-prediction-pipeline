@@ -5,6 +5,7 @@ from tools.constants import Constants
 import tools.py_tools as pyt
 import inspect
 import sys
+from alive_progress import alive_bar
 cs = Constants()
 
 
@@ -93,6 +94,18 @@ def load_module(module_uri: str, class_name: str, config: dict):
 def get_class_filename(class_object):
     delimeter = '/' if sys.platform != 'win32' else '\\'
     return inspect.getfile(class_object.__class__).split(delimeter)[-1].replace('.py', '')
+
+
+def compute_csv_len(pathname: str, file_name=None):
+    file = open(pathname, 'r')
+    sum = 1
+    with alive_bar(title=f'Computing size {file_name}') as bar:
+        for _ in file:
+            sum += 1
+            bar()
+
+    file.close()
+    return sum
 
 
 class LoadPythonPackage:

@@ -1,10 +1,11 @@
 import time
 
-def get(input_data: dict, keys: list):
+
+def get(input_data: dict, keys: list, default=None):
 
     data = input_data
     for key in keys:
-        data = data.get(key, None)
+        data = data.get(key, default)
 
         if data is None: break
 
