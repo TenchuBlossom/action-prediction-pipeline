@@ -35,3 +35,31 @@ def timeit(function, return_output=False):
         return dict(time_elapsed=time_elapsed, output=out)
 
     return dict(time_elapsed=time_elapsed, output=None)
+
+
+def get_dtype_instance(dtype: str, fallback=None):
+
+    if dtype == 'str': return str
+
+    if dtype == 'int': return int
+
+    if dtype == 'float': return float
+
+    if dtype == 'bool': return bool
+
+    if fallback: return fallback
+
+    raise TypeError(f'Provided dtype of {dtype} is not a valid python type')
+
+
+def convert_dtype(value, dtype: str):
+
+    if dtype == 'str': return str(value)
+
+    if dtype == 'int': return int(value)
+
+    if dtype == 'float': return float(value)
+
+    if dtype == 'bool': return bool(value)
+
+

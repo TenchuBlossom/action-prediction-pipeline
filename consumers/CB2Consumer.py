@@ -30,7 +30,7 @@ class Consumer:
             sep = data_src.get('sep', None)
             metadata = data_src['metadata']
             dataset_name = name
-            batch_loader = pd.read_csv(src, sep=sep, chunksize=chunksize)
+            batch_loader = pd.read_csv(src, sep=sep, chunksize=chunksize, dtype=str)
             length = data_src.get('length', None)
 
             if data_src.get('length', None) == 'compute':
@@ -42,7 +42,8 @@ class Consumer:
                 'batch_loader': batch_loader,
                 'length': length,
                 'metadata': metadata,
-                'src': src
+                'src': src,
+                'eligible_for_processing': True
             }
 
         self.datasets = datasets

@@ -16,7 +16,7 @@ class CB2CleaningPipeline:
         while not self.consumer.consume_process_complete:
             self.consumer.consume()
             self.consumer.transform()
-            # self.consumer.store_locally()
+            self.consumer.store_locally()
 
 
 if __name__ == "__main__":
