@@ -1,3 +1,4 @@
+import dask.dataframe as dd
 
 class Transform:
 
@@ -10,18 +11,19 @@ class Transform:
         data_names = list(datasets.keys())
         src = data_names.copy()
 
-        marged_dataset = datasets[data_names.pop()]['data']
+        name = data_names.pop()
+        merged_dataset = datasets[name]['data']
 
-        for data in datasets:
-            subset = datasets[data]['data']
-            marged_dataset = marged_dataset.append(subset, sort=False)
+        for name in data_names:
+            subset = datasets[name]['data']
+            merged_dataset = dd.concat([merged_dataset, subset])
 
         meta_data = 'Merged dataframe from src datasets'
         if self.config.get('keep_datasets', True):
-            datasets[output_name] = {'data': marged_dataset, 'src': src, 'metadata': meta_data}
+            datasets[output_name] = {'data': merged_dataset, 'src': src, 'metadata': meta_data}
 
         else:
             datasets = dict()
-            datasets[output_name] = {'data': marged_dataset, 'src': src, 'metadata': meta_data}
+            datasets[output_name] = {'data': merged_dataset, 'src': src, 'metadata': meta_data}
 
         return datasets

@@ -1,0 +1,67 @@
+consumer:
+  name: CB2Consumer
+  chunksize: 500
+  local_storage_dir: 'cb2_test'
+  local_storage_dest: '../../data/cb2/processed'
+
+data_sources:
+  - name: 'CB2_5tzy'
+    metadata: 'raw data from cb2 dataset'
+    sep: '\t'
+    src: "../data/cb2/raw/CB2_5tzy_all_action.csv"
+    length: 98799
+
+  - name: 'CB2_6kpc'
+    metadata:  'raw data from cb2 dataset'
+    sep: '\t'
+    src: "../data/cb2/raw/CB2_6kpc_all_action.csv"
+    length: 91064
+
+  - name: 'CB2_6kpf'
+    metadata:  'raw data from cb2 dataset'
+    sep: '\t'
+    src: "../data/cb2/raw/CB2_6kpf_all_action.csv"
+    length: 87141
+
+transforms:
+
+  clean_features:
+    exceptions:
+      - Action
+      - Ligand_Pose
+      - Ligand_Pose2
+      - ID
+      - CB2_CAMP
+      - CB2_beta_Arrestin
+
+  remove_features:
+    filters:
+      - Clash
+      - Proximal
+      - Ligand_Pose
+      - Ligand_Pose2
+      - ID
+
+  merge:
+    output_name: merged-data
+    keep_datasets: false
+
+  change_nans:
+    value: 0
+
+provider:
+  name: CB2Provider
+  dataset_name: merged-data
+  preview_frac: 0.1
+  test_size: 0.05
+  classes:
+    - 0
+    - 1
+  y_names:
+    - CB2_CAMP
+    - CB2_beta_Arrestin
+  y_target: CB2_CAMP
+  random_seed: 42
+  shuffle: true
+  stratify: true
+  to_numpy: true

@@ -29,8 +29,8 @@ class TrainPipeline:
 
 if __name__ == "__main__":
 
-    d_src = '../configs/beta1_active/data.config.yaml'
-    m_src = '../configs/beta1_active/trainable.config.yaml'
+    d_src = '../../configs/beta1_active/data.config.yaml'
+    m_src = '../../configs/beta1_active/trainable.config.yaml'
     a_src = ''
 
     pipe = TrainPipeline(d_src, m_src, a_src)

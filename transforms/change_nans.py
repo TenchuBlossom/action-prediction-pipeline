@@ -6,14 +6,13 @@ class Transform:
     def __call__(self, datasets: dict):
 
         value = self.config['value']
-
         keys = list(datasets.keys())
-
         for name in keys:
-            datasets[name]['data'].fillna(value, inplace=True)
-            nan_count = datasets[name]['data'].isna().sum().sum()
-            if nan_count > 0:
-                raise ValueError(
-                    f'Transform Error: Change nans has failed. transform detected {nan_count} NaNs Remaining')
+            datasets[name]['data'] = datasets[name]['data'].fillna(value)
+            return datasets
 
-        return datasets
+            # do these checks once the data has been computed
+            # nan_count = datasets[name]['data'].isna().sum().sum()
+            # if nan_count > 0:
+            #     raise ValueError(
+            #         f'Transform Error: Change nans has failed. transform detected {nan_count} NaNs Remaining')

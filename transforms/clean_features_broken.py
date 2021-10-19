@@ -9,7 +9,14 @@ class Transform:
         if col_name in self.config['exceptions']:
             return col_name
 
-        new_col_name = col_name[2:]
+        new_col_name = col_name
+        isLetterA = new_col_name.startswith("A")
+
+        if isLetterA:
+            new_col_name = new_col_name[3:]
+
+        else:
+            new_col_name = new_col_name[2:]
 
         if new_col_name.startswith("0"):
             new_col_name = new_col_name[1:]
@@ -18,9 +25,11 @@ class Transform:
 
     def __call__(self, datasets: dict):
         for key in datasets.keys():
+            dups_before_rename = any(datasets[key]['data'].columns.duplicated())
             datasets[key]['data'] = datasets[key]['data'].rename(columns=self.__mapper__)
-            dup_after_rename = any(datasets[key]['data'].columns.duplicated())
-            if dup_after_rename:
-                raise KeyError('Clean Features Transform: Duplicate feature detected, this will cause concat errors')
+            dup_after_rename = list(datasets[key]['data'].columns.duplicated())
+            indexes = [i for i, x in enumerate(dup_after_rename) if x]
+            dups = list(datasets[key]['data'].columns[indexes])
+
 
         return datasets
