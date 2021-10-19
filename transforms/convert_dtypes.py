@@ -8,11 +8,10 @@ class Transform:
         self.config = config
 
     def __call__(self, datasets: dict):
-        ignore_gate = self.config.get('ignore_gate', True)
         default = self.config['default']
         column_types = self.config.get('columns', None)
 
-        for _, dataset in ct.transform_gate(datasets, ignore_gate):
+        for _, dataset in ct.transform_gate(datasets):
             dtype_map = dict()
             for column in dataset['data'].columns:
 

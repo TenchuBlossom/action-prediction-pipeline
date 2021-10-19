@@ -26,7 +26,6 @@ data_sources:
 transforms:
 
   clean_features:
-    ignore_gate: true
     check_for_duplicates: true
     exceptions:
       - Action
@@ -37,7 +36,6 @@ transforms:
       - CB2_beta_Arrestin
 
   remove_features:
-    ignore_gate: true
     filters:
       - Clash
       - Proximal
@@ -46,7 +44,6 @@ transforms:
       - ID
 
   clean_labels:
-    ignore_gate: true
     labels:
       CB2_CAMP:
         possible_values:
@@ -69,14 +66,12 @@ transforms:
           AGONIST, inverse agonist: "0"
 
   convert_dtypes:
-    ignore_gate: true
     default: float
     columns:
       CB2_CAMP: int
       CB2_beta_Arrestin: int
 
   concat_datasets:
-    ignore_gate: true
     output_name: concat-data
     keep_datasets: true
 

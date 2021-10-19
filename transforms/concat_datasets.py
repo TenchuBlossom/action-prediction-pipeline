@@ -7,11 +7,10 @@ class Transform:
         self.config = config
 
     def __call__(self, datasets: dict) -> dict:
-        ignore_gate = self.config.get('ignore_gate', True)
         output_name = self.config.get('output_name', 'concat_dataset')
         keep_datasets = self.config.get('keep_datasets', True)
 
-        data_to_concat = [dataset['data'] for _, dataset in ct.transform_gate(datasets, ignore_gate)]
+        data_to_concat = [dataset['data'] for _, dataset in ct.transform_gate(datasets)]
         new_data = pd.concat(data_to_concat)
 
         if keep_datasets:

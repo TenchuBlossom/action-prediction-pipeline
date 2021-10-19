@@ -15,7 +15,8 @@ class Consumer:
         self.transform_chain = ct.compile_transforms(self.config)
         self.provider = ct.compile_provider(self.config)
         self.datasets = None
-        self.consume_process_complete = False
+        self.total_processes = None
+        self.completed_processes = 0
 
         self.__compile_datasets__()
 
@@ -46,23 +47,28 @@ class Consumer:
                 'eligible_for_processing': True
             }
 
+        self.total_processes = len(datasets)
         self.datasets = datasets
 
     def consume(self):
         # this will
-        try:
-            for _, dataset in self.datasets.items():
+        for _, dataset in self.datasets.items():
+            try:
                 chunk = next(dataset['batch_loader'])
                 dataset['data'] = chunk
 
-        except StopIteration:
-            self.consume_process_complete = True
+            except StopIteration:
+                self.completed_processes += 1
 
     def transform(self):
         self.datasets = ct.execute_transforms(self.transform_chain, self.datasets)
 
     def provide(self) -> tuple:
         return self.provider(self.datasets)
+
+    def processes_completed(self):
+        return self.completed_processes == self.total_processes
+
 
 
 if __name__ == '__main__':

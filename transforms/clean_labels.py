@@ -21,10 +21,9 @@ class Transform:
 
     def __call__(self, datasets: dict):
 
-        ignore_gate = self.config.get('ignore_gate', True)
         labels = self.config['labels']
 
-        for _, dataset in ct.transform_gate(datasets, ignore_gate):
+        for _, dataset in ct.transform_gate(datasets):
             data = dataset['data']
             for column, label in labels.items():
                 possible_values = label['possible_values']

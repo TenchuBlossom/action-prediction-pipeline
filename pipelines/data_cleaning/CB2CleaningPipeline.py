@@ -13,10 +13,10 @@ class CB2CleaningPipeline:
         self.consumer = pt.compile_consumer(self.data_config)
 
     def execute(self):
-        while not self.consumer.consume_process_complete:
+        while not self.consumer.processes_completed():
             self.consumer.consume()
             self.consumer.transform()
-            self.consumer.store_locally()
+            # self.consumer.store_locally()
 
 
 if __name__ == "__main__":
