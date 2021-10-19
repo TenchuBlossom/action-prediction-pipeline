@@ -33,7 +33,7 @@ class Consumer:
             batch_loader = pd.read_csv(src, sep=sep, chunksize=chunksize)
             length = data_src.get('length', None)
 
-            if data_src.get('len', None) == 'compute':
+            if data_src.get('length', None) == 'compute':
                 # then compute length of dataset
                 length = fs.compute_csv_len(src, name)
 
