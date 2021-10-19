@@ -26,6 +26,8 @@ data_sources:
 transforms:
 
   clean_features:
+    ignore_gate: true
+    check_for_duplicates: true
     exceptions:
       - Action
       - Ligand_Pose
@@ -35,6 +37,7 @@ transforms:
       - CB2_beta_Arrestin
 
   remove_features:
+    ignore_gate: true
     filters:
       - Clash
       - Proximal
@@ -42,12 +45,48 @@ transforms:
       - Ligand_Pose2
       - ID
 
-  merge:
-    output_name: merged-data
-    keep_datasets: false
+  clean_labels:
+    ignore_gate: true
+    labels:
+      CB2_CAMP:
+        possible_values:
+          - "0"
+          - "1"
+
+        relabels:
+          AGONIST: "1"
+          inverse agonist: "0"
+          AGONIST, inverse agonist: "0"
+
+      CB2_beta_Arrestin:
+        possible_values:
+          - "0"
+          - "1"
+
+        relabels:
+          AGONIST: "1"
+          inverse agonist: "0"
+          AGONIST, inverse agonist: "0"
+
+  convert_dtypes:
+    ignore_gate: true
+    default: float
+    columns:
+      CB2_CAMP: int
+      CB2_beta_Arrestin: int
+
+  concat_datasets:
+    ignore_gate: true
+    output_name: concat-data
+    keep_datasets: true
+
+  transform_gate:
+    - concat-data
 
   change_nans:
+    ignore_gate: false
     value: 0
+
 
 provider:
   name: CB2Provider
