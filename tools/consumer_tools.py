@@ -43,13 +43,13 @@ def compile_provider(config: dict):
     return provider
 
 
-def transform_gate(datasets: dict, ignore_gate=True):
+def transform_gate(datasets: dict, ignore_gate=False):
 
     if ignore_gate: return datasets.items()
 
     gated_datasets = []
     for key, dataset in datasets.items():
-        if dataset['eligible_for_processing']:
+        if dataset['eligible_for_processing'] and dataset['data'] is not None:
             gated_datasets.append((key, dataset))
 
     return gated_datasets

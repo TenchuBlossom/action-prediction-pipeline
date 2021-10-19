@@ -20,10 +20,9 @@ class Transform:
 
     def __call__(self, datasets: dict):
 
-        ignore_gate = self.config.get('ignore_gate', True)
         check_for_dups = self.config.get('check_for_duplicates', False)
 
-        for key, dataset in ct.transform_gate(datasets, ignore_gate):
+        for key, dataset in ct.transform_gate(datasets):
             dataset['data'] = dataset['data'].rename(columns=self.__mapper__)
 
             if not check_for_dups: continue
