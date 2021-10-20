@@ -3,6 +3,7 @@ import tools.py_tools as pyt
 import tools.file_system as fs
 import os
 import dask.dataframe as dd
+import tools.pipeline_tools as pt
 import tools.consumer_tools as ct
 from multiprocessing import freeze_support
 
@@ -38,14 +39,12 @@ class Consumer:
                 # then compute length of dataset
                 length = fs.compute_csv_len(src, name)
 
-            datasets[dataset_name] = {
-                'data': None,
+            datasets[dataset_name] = pt.Dataset(**{
                 'batch_loader': batch_loader,
                 'length': length,
                 'metadata': metadata,
                 'src': src,
-                'eligible_for_processing': True
-            }
+            })
 
         self.total_processes = len(datasets)
         self.datasets = datasets
@@ -54,10 +53,12 @@ class Consumer:
         # this will
         for _, dataset in self.datasets.items():
             try:
-                chunk = next(dataset['batch_loader'])
-                dataset['data'] = chunk
+                chunk = next(dataset.batch_loader)
+                dataset.data = chunk
+                dataset.headers = chunk.columns
 
             except StopIteration:
+                dataset.spin_down()
                 self.completed_processes += 1
 
     def transform(self):
@@ -68,7 +69,6 @@ class Consumer:
 
     def processes_completed(self):
         return self.completed_processes == self.total_processes
-
 
 
 if __name__ == '__main__':

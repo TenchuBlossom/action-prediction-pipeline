@@ -10,8 +10,8 @@ class Transform:
         eligible_for_processing = self.config
         for name, dataset in datasets.items():
             if name not in eligible_for_processing:
-                dataset['eligible_for_processing'] = False
+                dataset.eligible_for_transformation = False
                 continue
-            dataset['eligible_for_processing'] = True
+            dataset.eligible_for_transformation = True
 
         return datasets

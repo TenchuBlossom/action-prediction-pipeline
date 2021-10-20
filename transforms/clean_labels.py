@@ -24,7 +24,7 @@ class Transform:
         labels = self.config['labels']
 
         for _, dataset in ct.transform_gate(datasets):
-            data = dataset['data']
+            data = dataset.data
             for column, label in labels.items():
                 possible_values = label['possible_values']
                 relabels = label['relabels']

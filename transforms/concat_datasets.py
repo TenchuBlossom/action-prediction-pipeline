@@ -1,5 +1,7 @@
 import pandas as pd
 import tools.consumer_tools as ct
+import tools.pipeline_tools as pt
+
 
 class Transform:
 
@@ -10,15 +12,13 @@ class Transform:
         output_name = self.config.get('output_name', 'concat_dataset')
         keep_datasets = self.config.get('keep_datasets', True)
 
-        data_to_concat = [dataset['data'] for _, dataset in ct.transform_gate(datasets)]
+        data_to_concat = [dataset.data for _, dataset in ct.transform_gate(datasets)]
         new_data = pd.concat(data_to_concat)
 
         if keep_datasets:
-            datasets[output_name] = dict()
-            datasets[output_name]['data'] = new_data
+            datasets[output_name] = pt.Dataset(data=new_data)
             return datasets
 
         datasets = dict()
-        datasets[output_name] = dict()
-        datasets[output_name]['data'] = new_data
+        datasets[output_name] = pt.Dataset(data=new_data)
         return datasets

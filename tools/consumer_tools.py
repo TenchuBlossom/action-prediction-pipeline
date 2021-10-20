@@ -23,11 +23,17 @@ def compile_transforms(config: dict) -> list:
     return transform_chain
 
 
-def execute_transforms(transform_chain: list, dataset: dict) -> dict:
+def execute_transforms(transform_chain: list, datasets: dict) -> dict:
     for transform in tqdm(transform_chain, desc="Applying Transforms", colour="WHITE"):
-        dataset = transform(dataset)
+        datasets = transform(datasets)
 
-    return dataset
+    return datasets
+
+
+def reset_datasets(datasets: dict):
+    for _, dataset in datasets:
+        dataset.reset()
+    return datasets
 
 
 def compile_provider(config: dict):
@@ -49,7 +55,7 @@ def transform_gate(datasets: dict, ignore_gate=False):
 
     gated_datasets = []
     for key, dataset in datasets.items():
-        if dataset['eligible_for_processing'] and dataset['data'] is not None:
+        if dataset.eligible_for_transformation and not dataset.batch_loader_exhausted:
             gated_datasets.append((key, dataset))
 
     return gated_datasets
