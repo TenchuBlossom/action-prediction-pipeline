@@ -2,6 +2,9 @@ import yaml
 import tools.file_system as fs
 from tqdm import tqdm
 from tools.constants import Constants
+import tools.pipeline_tools as pt
+
+import pandas as pd
 cs = Constants()
 
 
@@ -49,14 +52,23 @@ def compile_provider(config: dict):
     return provider
 
 
-def transform_gate(datasets: dict, ignore_gate=False):
+def transform_gate(datasets: dict, ignore_gate=False, dummy_exhausted_datasets=False):
 
     if ignore_gate: return datasets.items()
 
     gated_datasets = []
     for key, dataset in datasets.items():
-        if dataset.eligible_for_transformation and not dataset.batch_loader_exhausted:
-            gated_datasets.append((key, dataset))
+
+        if not dataset.eligible_for_transformation: continue
+
+        if dataset.batch_loader_exhausted:
+            if dummy_exhausted_datasets:
+                dataset.data = pd.DataFrame(None, columns=dataset.headers)
+                gated_datasets.append((key, dataset))
+
+            continue
+
+        gated_datasets.append((key, dataset))
 
     return gated_datasets
 

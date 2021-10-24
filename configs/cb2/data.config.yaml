@@ -1,8 +1,6 @@
 consumer:
   name: CB2Consumer
   chunksize: 500
-  local_storage_dir: 'cb2_test'
-  local_storage_dest: '../../data/cb2/processed'
 
 data_sources:
   - name: 'CB2_5tzy'
