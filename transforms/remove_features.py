@@ -1,5 +1,6 @@
 import tools.consumer_tools as ct
 
+
 class Transform:
 
     def __init__(self, config):
@@ -11,7 +12,6 @@ class Transform:
 
         for _, dataset in ct.transform_gate(datasets):
             for filter_str in search_filters:
-                data = dataset['data']
-                data.drop(data.filter(regex=filter_str).columns, axis=1, inplace=True)
+                dataset.data.drop(dataset.data.filter(regex=filter_str).columns, axis=1, inplace=True)
 
         return datasets

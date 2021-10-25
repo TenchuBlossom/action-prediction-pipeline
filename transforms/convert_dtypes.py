@@ -13,7 +13,7 @@ class Transform:
 
         for _, dataset in ct.transform_gate(datasets):
             dtype_map = dict()
-            for column in dataset['data'].columns:
+            for column in dataset.data.columns:
 
                 if column_types:
                     dtype = column_types.get(column, None)
@@ -24,6 +24,6 @@ class Transform:
 
                 dtype_map[column] = pyt.get_dtype_instance(default)
 
-            dataset['data'] = dataset['data'].astype(dtype_map)#
+            dataset.data = dataset.data.astype(dtype_map)
 
         return datasets

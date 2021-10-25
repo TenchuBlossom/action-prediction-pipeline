@@ -23,11 +23,11 @@ class Transform:
         check_for_dups = self.config.get('check_for_duplicates', False)
 
         for key, dataset in ct.transform_gate(datasets):
-            dataset['data'] = dataset['data'].rename(columns=self.__mapper__)
+            dataset.data = dataset.data.rename(columns=self.__mapper__)
 
             if not check_for_dups: continue
 
-            dup_after_rename = any(dataset['data'].columns.duplicated())
+            dup_after_rename = any(dataset.data.columns.duplicated())
             if dup_after_rename:
                 raise KeyError('Clean Features Transform: Duplicate feature detected, this will cause concat errors')
 

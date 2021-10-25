@@ -1,26 +1,24 @@
 consumer:
   name: CB2Consumer
   chunksize: 500
-  local_storage_dir: 'cb2_test'
-  local_storage_dest: '../../data/cb2/processed'
 
 data_sources:
   - name: 'CB2_5tzy'
     metadata: 'raw data from cb2 dataset'
     sep: '\t'
-    src: "../data/cb2/raw/CB2_5tzy_all_action.csv"
+    src: "../data/cb2/test_data/CB2_5tzy_all_action.csv"
     length: 98799
 
   - name: 'CB2_6kpc'
     metadata:  'raw data from cb2 dataset'
     sep: '\t'
-    src: "../data/cb2/raw/CB2_6kpc_all_action.csv"
+    src: "../data/cb2/test_data/CB2_6kpc_all_action.csv"
     length: 91064
 
   - name: 'CB2_6kpf'
     metadata:  'raw data from cb2 dataset'
     sep: '\t'
-    src: "../data/cb2/raw/CB2_6kpf_all_action.csv"
+    src: "../data/cb2/test_data/CB2_6kpf_all_action.csv"
     length: 87141
 
 transforms:
@@ -81,6 +79,11 @@ transforms:
   change_nans:
     ignore_gate: false
     value: 0
+
+  terminate:
+    sync_headers: true
+    clean_up:
+      - concat-data
 
 
 provider:
