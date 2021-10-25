@@ -15,6 +15,8 @@ class CB2CleaningPipeline:
     def execute(self):
         while not self.consumer.processes_completed():
             self.consumer.consume()
+            if self.consumer.processes_completed():
+                continue
             self.consumer.transform()
 
 
@@ -24,3 +26,4 @@ if __name__ == "__main__":
 
     pipe = CB2CleaningPipeline(d_src)
     pipe.execute()
+    a = 0
