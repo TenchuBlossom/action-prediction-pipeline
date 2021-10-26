@@ -80,6 +80,16 @@ transforms:
     ignore_gate: false
     value: 0
 
+  save_locally:
+    dir_location: "../../data/cb2/processed"
+    dir_name: "test_cb2"
+    partition_on_columns:
+      - CB2_CAMP
+      - CB2_beta_Arrestin
+
+    partition_on_rows: true
+
+
   terminate:
     sync_headers: true
     clean_up:

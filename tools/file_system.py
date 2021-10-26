@@ -31,12 +31,12 @@ def path_exists(pathname, throw_exception=False) -> bool:
     return True
 
 
-def make_dir(pathname: str) -> tuple:
+def make_dir(pathname: str) -> str:
     if not os.path.exists(pathname):
         os.mkdir(pathname)
-        return True, pathname
+        return pathname
 
-    return False, pathname
+    return pathname
 
 
 def make_dir_chain(pathname: str, dir_chain: list) -> tuple:

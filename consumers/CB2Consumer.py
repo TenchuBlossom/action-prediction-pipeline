@@ -50,7 +50,7 @@ class Consumer:
 
     def consume(self):
         # this will
-        for _, dataset in self.datasets.items():
+        for _, dataset in ct.transform_gate(self.datasets):
             try:
                 chunk = next(dataset.batch_loader)
                 dataset.data = chunk
