@@ -87,9 +87,6 @@ transforms:
       - CB2_CAMP
       - CB2_beta_Arrestin
 
-    partition_on_rows: true
-
-
   terminate:
     sync_headers: true
     clean_up:
@@ -98,7 +95,7 @@ transforms:
 
 provider:
   name: CB2Provider
-  dataset_name: merged-data
+  dataset_dir: '../../data/cb2/processed/test_cb2/concat-data'
   preview_frac: 0.1
   test_size: 0.05
   classes:

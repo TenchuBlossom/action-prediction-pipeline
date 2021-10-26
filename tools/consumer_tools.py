@@ -39,19 +39,6 @@ def reset_datasets(datasets: dict):
     return datasets
 
 
-def compile_provider(config: dict):
-
-    provider_config = config.get(cs.provider, None)
-    if not provider_config: return None
-
-    provider_name = provider_config.get(cs.name, None)
-    if not provider_name: return None
-
-    provider = fs.load_module(module_uri=f'providers.{provider_name}', class_name=cs.Provider, config=provider_config)
-    print(f'{cs.tickIcon} Provider successfully compiled')
-    return provider
-
-
 def transform_gate(datasets: dict, ignore_gate=False, dummy_exhausted_datasets=False):
 
     if ignore_gate: return datasets.items()

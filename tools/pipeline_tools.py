@@ -27,6 +27,19 @@ def compile_trainable(config: dict):
     return trainable
 
 
+def compile_provider(config: dict):
+
+    provider_config = config.get(cs.provider, None)
+    if not provider_config: return None
+
+    provider_name = provider_config.get(cs.name, None)
+    if not provider_name: return None
+
+    provider = fs.load_module(module_uri=f'providers.{provider_name}', class_name=cs.Provider, config=provider_config)
+    print(f'{cs.tickIcon} Provider successfully compiled')
+    return provider
+
+
 class Dataset:
 
     def __init__(self, data=None, batch_loader=None, length=None, metadata=None, src=None):

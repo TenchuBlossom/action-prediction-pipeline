@@ -6,6 +6,7 @@ import tools.py_tools as pyt
 import inspect
 import sys
 from alive_progress import alive_bar
+import json
 cs = Constants()
 
 
@@ -47,13 +48,13 @@ def make_dir_chain(pathname: str, dir_chain: list) -> tuple:
     return pathname
 
 
-def get_dirs(pathname: str) -> tuple:
+def get_dirs(pathname: str, custom_check) -> tuple:
 
     pathname = path(pathname)
     dirs = []
     full_path_dirs = []
     for file in os.listdir(pathname):
-        if os.path.isdir(os.path.join(pathname, file)):
+        if os.path.isdir(os.path.join(pathname, file)) and custom_check(file):
             dirs.append(file)
             full_path_dirs.append(os.path.join(pathname, file))
 
@@ -61,13 +62,37 @@ def get_dirs(pathname: str) -> tuple:
 
 
 def find_file_type(pathname: str, file_extension: str) -> list:
+    pathname = path(pathname)
     return [file for file in os.listdir(pathname) if file.endswith(file_extension)]
+
+
+def find_files(pathname: str, files: list) -> tuple:
+    pathname = path(pathname)
+    file_names = []
+    file_paths = []
+    for file in os.listdir(pathname):
+        if file not in files: continue
+        file_names.append(file)
+        file_paths.append(os.path.join(pathname, file))
+
+    return file_names, file_paths
 
 
 def delete_files(files: list):
     for f in files:
         os.remove(f)
 
+
+def load_json(pathname: str):
+    pathname = path(pathname)
+    with open(pathname) as json_file:
+        data = json.load(json_file)
+    return data
+
+
+def save_json(pathname: str, data):
+    with open(pathname, 'w') as file_obj:
+        json.dump(data, file_obj)
 
 def compile_config(src) -> dict:
 
