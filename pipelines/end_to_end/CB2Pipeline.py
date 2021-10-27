@@ -21,7 +21,12 @@ class CB2Pipeline:
             self.consumer.transform()
 
     def execute_downstream(self):
-        outs = self.provider.provide()
+        x_train, x_test, y_train, y_test, feature_names = self.provider.provide()
+
+        self.trainable.train(x_train, y_train)
+        self.trainable.evaluate(x_test, y_test)
+        self.trainable.diagnose()
+
         a = 0
 
 
