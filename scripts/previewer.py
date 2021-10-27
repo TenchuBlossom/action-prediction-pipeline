@@ -1,27 +1,13 @@
-from multiprocessing import freeze_support
-import pandas as pd
-import tools.file_system as fs
-import dask.dataframe as dd
-import pandas as pd
-import numpy as np
-import tools.py_tools as pyt
-import csv
-import sys
-from alive_progress import alive_bar
 
-if __name__ == '__main__':
-    freeze_support()
-    # csv.field_size_limit(sys.maxsize)
+from mergedeep import merge, Strategy
 
-    path1 = fs.path('../data/cb2/raw/CB2_5tzy_all_action.csv')
-    path2 = fs.path('../data/cb2/raw/CB2_6kpf/CB2_6kpf/all_action.csv')
+dict1 = {"key": [1, 2]}
+dict2 = {"key": [3, 4]}
+dict3 = {"key": [5, 6]}
 
-    reader = pd.read_csv(path1, sep='\t', chunksize=1000)
 
-    row_idx = 0
-    for chuck in reader:
-        a = 0
-
+out = merge({}, dict1, dict2, dict3, strategy=Strategy.ADDITIVE)
+a = 0
 
 
 

@@ -13,7 +13,6 @@ class Consumer:
 
         self.config = fs.compile_config(config_src)
         self.transform_chain = ct.compile_transforms(self.config)
-        self.provider = ct.compile_provider(self.config)
         self.datasets = None
         self.total_processes = None
         self.completed_processes = 0
@@ -62,9 +61,6 @@ class Consumer:
 
     def transform(self):
         self.datasets = ct.execute_transforms(self.transform_chain, self.datasets)
-
-    def provide(self) -> tuple:
-        return self.provider(self.datasets)
 
     def processes_completed(self):
         return self.completed_processes == self.total_processes
