@@ -56,10 +56,13 @@ class Provider:
                 random_state=random_seed
             )
 
-        dataset = virtual_db.compute(y_database, dtype=dtype, middleware=[self.__check_header_equality__])
-        x = dataset.drop(y_names, axis=1)
-        y = dataset[y_target]
-        feature_names = dataset.columns
+        x_train = virtual_db.compute(x_train, dtype=dtype, middleware=[self.__check_header_equality__])
+        x_train = x_train.drop(y_names, axis=1)
+
+        x_test = virtual_db.compute(x_test, dtype=dtype, middleware=[self.__check_header_equality__])
+        x_test = x_test.drop(y_names, axis=1)
+
+        # feature_names = dataset.columns
 
         x_train = x_train.to_numpy()
         x_test = x_test.to_numpy()

@@ -102,26 +102,30 @@ class VirtualDb:
 
         return out_db
 
-    def compute(self, db_field: dict, dtype, middleware=None):
+    def compute(self, virtual_dataframe: pd.DataFrame, dtype, middleware=None):
+
+        if virtual_dataframe.shape[1] != 2:
+            raise ValueError(f'Error Virtual Dataframe Shape: received shape {virtual_dataframe.shape}.'
+                             f'A virtual dataframe must be an nx2 shape dataframe where the columns'
+                             f'correspond to row indexes and partition ids ')
 
         # indexes: list, partitions: list
         rows = []
         cols = None
 
-        for i, (name, val) in enumerate(db_field.items()):
-            indexes = val['index']
-            partitions = val['partition']
-            with tqdm(total=len(indexes), desc=f"Computing data instances: Value={name} ") as pbar:
-                for idx, partition_name in zip(indexes, partitions):
-                    partition = self.partitions[partition_name]
-                    row_file = os.path.join(partition.paths.row, f'{idx}_row.csv')
-                    row_data = pd.read_csv(row_file, skiprows=[0], names=['features', 'interactions'])
-                    for ware in middleware:
-                        row_data = ware(row_data, cols)
+        with tqdm(total=len(virtual_dataframe), desc=f"Computing data instances: ") as pbar:
+            for i in range(len(virtual_dataframe)):
+                v_row = virtual_dataframe.iloc[i]
+                index, partition_name = v_row.values
+                partition = self.partitions[partition_name]
+                row_file = os.path.join(partition.paths.row, f'{index}_row.csv')
+                row_data = pd.read_csv(row_file, skiprows=[0], names=['features', 'interactions'])
+                for ware in middleware:
+                    row_data = ware(row_data, cols)
 
-                    if i == 0: cols = partition.headers
-                    rows.append(row_data['interactions'].values)
-                    pbar.update()
+                if i == 0: cols = partition.headers
+                rows.append(row_data['interactions'].values)
+                pbar.update()
 
         with alive_bar(title=f'Converting to dataframe') as bar:
             df = pd.DataFrame(rows, columns=cols, dtype=dtype)
