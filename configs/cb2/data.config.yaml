@@ -97,7 +97,7 @@ provider:
   name: CB2Provider
   dataset_dir: '../../data/cb2/processed/test_cb2/concat-data'
   dtype: float
-  preview_frac: 0.1
+  preview_frac: 0.5
   test_size: 0.05
   classes:
     - 0
