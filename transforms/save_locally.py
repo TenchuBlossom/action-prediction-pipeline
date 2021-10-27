@@ -18,7 +18,7 @@ class Transform:
         fs.make_dir(self.dir_pathname)
 
     def __to_csv__(self, row, pathname, virtual_db):
-        row.to_csv(os.path.join(pathname, f'{self.index}_row'), index=True)
+        row.to_csv(os.path.join(pathname, f'{self.index}_row.csv'), index=True)
 
         partition_on_columns = pyt.get(self.config, ['partition_on_columns'])
         for col_name in partition_on_columns:
