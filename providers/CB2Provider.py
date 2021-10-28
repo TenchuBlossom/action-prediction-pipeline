@@ -57,6 +57,7 @@ class Provider:
             )
 
         x_train = virtual_db.compute(x_train, dtype=dtype, middleware=[self.__check_header_equality__])
+        features = x_train.columns
         x_train = x_train.drop(y_names, axis=1)
 
         x_test = virtual_db.compute(x_test, dtype=dtype, middleware=[self.__check_header_equality__])
@@ -68,8 +69,8 @@ class Provider:
         x_test = x_test.to_numpy()
         y_train = y_train.to_numpy().flatten()
         y_test = y_test.to_numpy().flatten()
-        feature_names = feature_names.to_numpy()
-        return x_train, x_test, y_train, y_test, feature_names
+        feature = features.to_numpy()
+        return x_train, x_test, y_train, y_test, features
 
 
 
