@@ -6,7 +6,7 @@ class Model(BaseEstimator, ClassifierMixin):
 
     def __init__(self, config):
         self.config = config
-        self.base_estimator = CatBoostClassifier(**self.config)
+        self.base_estimator = CatBoostClassifier(**self.config) if config else CatBoostClassifier()
 
         self.y_true = None
         self.y_preds = None

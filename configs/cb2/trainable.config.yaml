@@ -1,0 +1,50 @@
+
+trainable:
+  name: BetaTrainable
+  test_model: true
+  save_path:
+
+  splitter:
+    name: SK_RepeatedStratifiedKFold
+    parameters:
+      n_splits: 5
+      n_repeats: 3
+      random_state: 42
+
+  validator:
+    name: SK_CrossValidate
+    parameters:
+      n_jobs: -1
+      scoring:
+        - MCC
+
+  model:
+    name: CatboostClassifier
+    parameters:
+
+
+diagnostics:
+  ConfusionMatrix:
+    parameters:
+      plot: true
+      labels:
+        0: antagonist
+        1: agonist
+
+  LearningCurve:
+    plot: true
+
+  Descriptives:
+    parameters:
+      plot: true
+      mean: true
+      median: true
+      std: true
+      confidence_interval: true
+
+  Shaps:
+    plot: true
+
+
+
+

@@ -44,7 +44,8 @@ def compile_model(config: dict):
     model_name = pyt.get(config, [cs.trainable, cs.model, cs.name])
     parameters = pyt.get(config, [cs.trainable, cs.model, cs.parameters])
 
-    if not model_name or not parameters: return None
+    if not model_name:
+        raise KeyError(f"Trainable Compile Model: Model {model_name} could not be found")
 
     model = fs.load_module(module_uri=f'{cs.models_uri}{model_name}', class_name=cs.Model, config=parameters)
     print(f'{cs.tickIcon} Model successfully compiled')
