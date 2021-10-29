@@ -7,10 +7,13 @@ cs = Constants()
 
 class CB2Pipeline:
 
-    def __init__(self, data_config_src: str, trainable_config_src: str):
+    def __init__(self, data_config_src: str, trainable_config_src: str, performance_profile=None):
 
         self.data_config = fs.compile_config(data_config_src)
         self.trainable_config = fs.compile_config(trainable_config_src)
+
+        self.data_config = pyt.put(self.data_config, performance_profile, ['consumer', 'performance_profile'])
+        self.data_config = pyt.put(self.data_config, performance_profile, ['provider', 'performance_profile'])
 
         self.consumer = pt.compile_consumer(self.data_config)
         self.provider = pt.compile_provider(self.data_config)
@@ -38,6 +41,7 @@ if __name__ == "__main__":
     d_src = '../../configs/cb2/data.config.yaml'
     t_src = '../../configs/cb2/trainable.config.yaml'
 
-    pipe = CB2Pipeline(d_src, t_src)
+    pipe = CB2Pipeline(d_src, t_src, "sync")
     pipe.execute_downstream()
+
     a = 0

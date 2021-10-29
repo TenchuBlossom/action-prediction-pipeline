@@ -1,13 +1,20 @@
-
+from line_profiler import LineProfiler
 from mergedeep import merge, Strategy
+import cProfile
 
-dict1 = {"key": [1, 2]}
-dict2 = {"key": [3, 4]}
-dict3 = {"key": [5, 6]}
+def function_time():
+    pr = cProfile.Profile()
+    pr.enable()
+    dict1 = {"key": [1, 2]}
+    dict2 = {"key": [3, 4]}
+    dict3 = {"key": [5, 6]}
+    out = merge({}, dict1, dict2, dict3, strategy=Strategy.ADDITIVE)
+    pr.disable()
+    pr.print_stats(sort='time')
 
 
-out = merge({}, dict1, dict2, dict3, strategy=Strategy.ADDITIVE)
-a = 0
+if __name__ == '__main__':
+    function_time()
 
 
 

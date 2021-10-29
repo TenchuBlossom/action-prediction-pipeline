@@ -32,6 +32,11 @@ def path_exists(pathname, throw_exception=False) -> bool:
     return True
 
 
+def touch(pathname):
+    with open(pathname, 'a'):
+        os.utime(pathname, None)
+
+
 def make_dir(pathname: str) -> str:
     if not os.path.exists(pathname):
         os.mkdir(pathname)
@@ -90,9 +95,14 @@ def load_json(pathname: str):
     return data
 
 
-def save_json(pathname: str, data):
+def save_json(pathname: str, data, optimise=True):
+
+    opt_params = dict(indent=4) if not optimise else dict()
+
     with open(pathname, 'w') as file_obj:
-        json.dump(data, file_obj)
+        json.dump(data, file_obj, **opt_params)
+
+
 
 def compile_config(src) -> dict:
 
@@ -131,6 +141,10 @@ def compute_csv_len(pathname: str, file_name=None):
 
     file.close()
     return sum
+
+
+def filename(frame_depth=1):
+    return os.path.basename(inspect.getsourcefile(sys._getframe(frame_depth)))
 
 
 class LoadPythonPackage:
