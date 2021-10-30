@@ -2,7 +2,7 @@ import tools.py_tools as pyt
 import tools.trainable_tools as tt
 from sklearn.model_selection import KFold, cross_validate
 from tools.constants import Constants
-import numpy as np
+from tools.performance_profile_tools import PerformanceProfile
 cs = Constants()
 
 

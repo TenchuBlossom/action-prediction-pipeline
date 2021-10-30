@@ -1,8 +1,0 @@
-{
-    "CB2Provider.py": {
-        "virtual-db": 0.09593558311462402,
-        "train_test_split": 0.007995128631591797,
-        "compute_x_train": 9.335865497589111,
-        "compute_x_test": 0.9174628257751465
-    }
-}

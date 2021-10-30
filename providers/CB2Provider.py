@@ -5,12 +5,11 @@ from sklearn.model_selection import train_test_split
 from tools.performance_profile_tools import PerformanceProfile
 
 
-
 class Provider:
 
     def __init__(self, config: dict):
         self.config = config
-        self.performance_profile = PerformanceProfile(self.config.get("performance_profile", None))
+        self.performance_profile = PerformanceProfile(self.config.get("performance_profile", {}))
 
     @staticmethod
     def __check_header_equality__(row_data, cols):
@@ -35,7 +34,7 @@ class Provider:
         dtype = pyt.get_dtype_instance(self.config.get('dtype', None))
 
         # TODO Load in data
-        with self.performance_profile("virtual-db"):
+        with self.performance_profile("virtual_db"):
             virtual_db = pt.VirtualDb(dataset_dir)
             virtual_db.anchor()
             database = virtual_db.view(view_all=True, merge_partitions=True)

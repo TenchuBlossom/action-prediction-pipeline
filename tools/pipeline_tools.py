@@ -1,7 +1,23 @@
 import tools.file_system as fs
 import tools.py_tools as pyt
 from tools.constants import Constants
+import os
 cs = Constants()
+
+
+def compile_data_config(config: dict, data_config_src: str):
+    data_config = fs.compile_config(data_config_src)
+    data_config = pyt.put(data_config, config['performance_profile'], ['consumer', 'performance_profile'])
+    data_config = pyt.put(data_config, config['performance_profile'], ['provider', 'performance_profile'])
+    return data_config
+
+
+def compile_train_config(config: dict, trainable_config_src: dict):
+    trainable_config = fs.compile_config(trainable_config_src)
+    trainable_config = pyt.put(trainable_config, config['performance_profile'], ['validator', 'performance_profile'])
+    trainable_config = pyt.put(trainable_config, config['performance_profile'], ['model', 'performance_profile'])
+    trainable_config = pyt.put(trainable_config, config['performance_profile'], ['diagnostics', 'performance_profile'])
+    return trainable_config
 
 
 def compile_consumer(config: dict):

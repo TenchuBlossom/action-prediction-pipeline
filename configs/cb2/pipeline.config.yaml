@@ -1,0 +1,7 @@
+pipeline:
+  data_config: '../../configs/cb2/data.config.yaml'
+  train_config:  '../../configs/cb2/trainable.config.yaml'
+
+performance_profile:
+  name: 'sync'
+  overwrite_profile: true

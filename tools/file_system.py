@@ -32,7 +32,8 @@ def path_exists(pathname, throw_exception=False) -> bool:
     return True
 
 
-def touch(pathname):
+def touch(pathname, overwrite=False):
+    if overwrite: delete_files([pathname])
     with open(pathname, 'a'):
         os.utime(pathname, None)
 
@@ -103,7 +104,6 @@ def save_json(pathname: str, data, optimise=True):
         json.dump(data, file_obj, **opt_params)
 
 
-
 def compile_config(src) -> dict:
 
     if type(src) is dict:
@@ -143,8 +143,23 @@ def compute_csv_len(pathname: str, file_name=None):
     return sum
 
 
+def get_stack_info(frame_depth=1):
+    return inspect.getframeinfo(sys._getframe(frame_depth))
+
+
 def filename(frame_depth=1):
     return os.path.basename(inspect.getsourcefile(sys._getframe(frame_depth)))
+
+
+def is_file_empty(pathname):
+
+    if not path_exists(pathname):
+        return True
+
+    if os.path.getsize(pathname) == 0:
+        return True
+
+    return False
 
 
 class LoadPythonPackage:
