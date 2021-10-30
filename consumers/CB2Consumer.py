@@ -62,6 +62,7 @@ class Consumer:
                 self.completed_processes += 1
 
     def transform(self):
+
         for transform in tqdm(self.transform_chain, desc="Applying Transforms", colour="WHITE"):
             self.datasets = transform(self.datasets)
 

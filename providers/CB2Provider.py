@@ -2,14 +2,13 @@ import numpy as np
 import tools.provider_tools as pt
 import tools.py_tools as pyt
 from sklearn.model_selection import train_test_split
-from tools.performance_profile_tools import PerformanceProfile
+import use_context
 
 
 class Provider:
 
     def __init__(self, config: dict):
         self.config = config
-        self.performance_profile = PerformanceProfile(self.config.get("performance_profile", {}))
 
     @staticmethod
     def __check_header_equality__(row_data, cols):
@@ -34,13 +33,13 @@ class Provider:
         dtype = pyt.get_dtype_instance(self.config.get('dtype', None))
 
         # TODO Load in data
-        with self.performance_profile("virtual_db"):
+        with use_context.performance_profile("virtual_db"):
             virtual_db = pt.VirtualDb(dataset_dir)
             virtual_db.anchor()
             database = virtual_db.view(view_all=True, merge_partitions=True)
             virtual_dataset = pt.to_virtual_dataframe(database[y_target], y_target, preview_frac, random_seed)
 
-        with self.performance_profile("train_test_split"):
+        with use_context.performance_profile("train_test_split"):
             # TODO shuffle & create train test splits
             if stratify:
                 x_train, x_test, y_train, y_test = train_test_split(
@@ -60,16 +59,15 @@ class Provider:
                     random_state=random_seed
                 )
 
-        with self.performance_profile("compute_x_train"):
+        with use_context.performance_profile("compute_x_train"):
             x_train = virtual_db.compute(x_train, dtype=dtype, middleware=[self.__check_header_equality__])
             features = x_train.columns
             x_train = x_train.drop(y_names, axis=1)
 
-        with self.performance_profile("compute_x_test"):
+        with use_context.performance_profile("compute_x_test"):
             x_test = virtual_db.compute(x_test, dtype=dtype, middleware=[self.__check_header_equality__])
             x_test = x_test.drop(y_names, axis=1)
 
-        self.performance_profile.close()
 
         x_train = x_train.to_numpy()
         x_test = x_test.to_numpy()

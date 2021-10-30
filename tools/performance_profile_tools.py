@@ -8,9 +8,8 @@ from collections import OrderedDict
 
 class PerformanceProfile:
 
-    def __init__(self, config: dict, filename=None):
+    def __init__(self, config: dict):
 
-        self.filename = filename if filename else fs.filename(frame_depth=2)
         self.profile_path = f'{config.get("name")}.profile.json' if config.get('name') else 'default.profile.json'
         self.overwrite_profile = config.get('overwrite_profile', True)
         self.dir_name = fs.path('../resources/performance_profile/')
@@ -21,14 +20,6 @@ class PerformanceProfile:
         self.start_time = None
         self.end_time = None
         self.read_profile()
-
-    @contextmanager
-    def __call__(self, block_name=None, call_name=None):
-        self.start_time = time()
-        yield
-        self.end_time = time()
-        self.total_time = self.end_time - self.start_time
-        self.update_profile(block_name, call_name)
 
     def read_profile(self):
 
@@ -45,9 +36,18 @@ class PerformanceProfile:
                 for call_name, call_block in block.items():
                     self.profile[block_name][call_name] = {'calls': call_block, 'iteration': 0}
 
-    def update_profile(self, block_name, call_name=None):
+    @contextmanager
+    def __call__(self, block_name=None, call_name=None, filename=None):
+        filename = filename if filename else fs.filename(frame_depth=3)
+        self.start_time = time()
+        yield
+        self.end_time = time()
+        self.total_time = self.end_time - self.start_time
+        self.update_profile(filename, block_name, call_name)
+
+    def update_profile(self, filename, block_name, call_name=None):
         call_name = call_name if call_name else ''
-        block = pyt.get(self.profile, [self.filename, block_name], {'iteration': 0, 'calls': {}})
+        block = pyt.get(self.profile, [filename, block_name], {'iteration': 0, 'calls': {}})
 
         if block.get('iteration') is None:
             block['iteration'] = 0
@@ -59,7 +59,7 @@ class PerformanceProfile:
         block = pyt.put(block, self.total_time, ['calls', f'{call_name}_call_{len(block["calls"])}'])
         block['iteration'] += 1
 
-        self.profile = pyt.put(self.profile, block, [self.filename, block_name])
+        self.profile = pyt.put(self.profile, block, [filename, block_name])
 
     def close(self):
         # Reformat for better viewing in json format
