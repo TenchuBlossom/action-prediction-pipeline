@@ -5,6 +5,8 @@ import os
 import tools.pipeline_tools as pt
 import tools.consumer_tools as ct
 from multiprocessing import freeze_support
+from tools.performance_profile_tools import PerformanceProfile
+from tqdm import tqdm
 
 
 class Consumer:
@@ -60,7 +62,8 @@ class Consumer:
                 self.completed_processes += 1
 
     def transform(self):
-        self.datasets = ct.execute_transforms(self.transform_chain, self.datasets)
+        for transform in tqdm(self.transform_chain, desc="Applying Transforms", colour="WHITE"):
+            self.datasets = transform(self.datasets)
 
     def processes_completed(self):
         return self.completed_processes == self.total_processes

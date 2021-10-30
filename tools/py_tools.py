@@ -19,6 +19,8 @@ def put(input_dict: dict, value, key_chain: list):
     if len(key_chain) == 0:
         input_dict[key] = value
     else:
+        if not input_dict.get(key, None):
+            input_dict[key] = dict()
         put(input_dict[key], value, key_chain)
 
     return input_dict
