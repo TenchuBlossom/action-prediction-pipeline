@@ -4,6 +4,7 @@ import tools.py_tools as pyt
 from tools.performance_profile_tools import PerformanceProfile
 from tools.constants import Constants
 import use_context
+from tqdm import tqdm
 cs = Constants()
 
 
@@ -22,11 +23,15 @@ class CB2Pipeline:
         use_context.performance_profile = PerformanceProfile(self.config['performance_profile'])
 
     def execute_clean(self):
-        while not self.consumer.processes_completed():
-            self.consumer.consume()
-            if self.consumer.processes_completed():
-                continue
-            self.consumer.transform()
+
+        desc = f"CB2 Pipeline: Cleaning Batches of size {self.consumer.chunksize}"
+        with tqdm(total=self.consumer.total_length, desc=desc) as pbar:
+            while not self.consumer.processes_completed():
+                no_of_samples = self.consumer.consume()
+                if self.consumer.processes_completed():
+                    continue
+                self.consumer.transform()
+                pbar.update(no_of_samples)
 
         use_context.performance_profile.close()
 

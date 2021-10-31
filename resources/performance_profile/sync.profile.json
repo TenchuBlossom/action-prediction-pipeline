@@ -1,37 +1,37 @@
 {
     "CB2Consumer.py": {
         "read-data": {
-            "batch_call_0": 3.4610815048217773,
-            "batch_call_1": 2.3214118480682373,
-            "batch_call_2": 1.2530312538146973,
+            "batch_call_0": 3.3879966735839844,
+            "batch_call_1": 2.2604033946990967,
+            "batch_call_2": 1.221024751663208,
             "batch_call_3": 0.0
         }
     },
     "transforms": {
         "clean_features.py": {
-            "batch_call_0": 0.07636690139770508,
-            "batch_call_1": 0.04999375343322754,
-            "batch_call_2": 0.02701878547668457
+            "batch_call_0": 0.07307720184326172,
+            "batch_call_1": 0.04900002479553223,
+            "batch_call_2": 0.02603745460510254
         },
         "remove_features.py": {
-            "batch_call_0": 0.45000505447387695,
-            "batch_call_1": 0.3016626834869385,
-            "batch_call_2": 0.15398550033569336
+            "batch_call_0": 0.42101263999938965,
+            "batch_call_1": 0.2814199924468994,
+            "batch_call_2": 0.15095305442810059
         },
         "clean_labels.py": {
-            "batch_call_0": 0.0550084114074707,
-            "batch_call_1": 0.03799748420715332,
-            "batch_call_2": 0.0189971923828125
+            "batch_call_0": 0.05339646339416504,
+            "batch_call_1": 0.039237022399902344,
+            "batch_call_2": 0.018998146057128906
         },
         "convert_dtypes.py": {
-            "batch_call_0": 2.3510422706604004,
-            "batch_call_1": 1.562032699584961,
-            "batch_call_2": 0.8159785270690918
+            "batch_call_0": 2.3161511421203613,
+            "batch_call_1": 1.5040349960327148,
+            "batch_call_2": 0.7900586128234863
         },
         "concat_datasets.py": {
-            "batch_call_0": 0.7755441665649414,
-            "batch_call_1": 0.8380482196807861,
-            "batch_call_2": 0.7660601139068604
+            "batch_call_0": 0.7723824977874756,
+            "batch_call_1": 0.8203694820404053,
+            "batch_call_2": 0.7429749965667725
         },
         "transform_gate.py": {
             "batch_call_0": 0.0,
@@ -39,38 +39,38 @@
             "batch_call_2": 0.0
         },
         "change_nans.py": {
-            "batch_call_0": 0.15848135948181152,
-            "batch_call_1": 0.3439805507659912,
-            "batch_call_2": 0.3880448341369629
+            "batch_call_0": 0.16463971138000488,
+            "batch_call_1": 0.3250274658203125,
+            "batch_call_2": 0.38103294372558594
         },
         "save_locally.py": {
-            "batch_call_0": 11.520906448364258,
-            "batch_call_1": 7.9171812534332275,
-            "batch_call_2": 3.891062021255493
+            "batch_call_0": 11.247261047363281,
+            "batch_call_1": 7.839167594909668,
+            "batch_call_2": 3.809718370437622
         },
         "terminate.py": {
-            "batch_call_0": 0.012004375457763672,
-            "batch_call_1": 0.008996725082397461,
-            "batch_call_2": 0.004996776580810547
+            "batch_call_0": 0.011991024017333984,
+            "batch_call_1": 0.00800633430480957,
+            "batch_call_2": 0.006000995635986328
         }
     },
     "CB2Provider.py": {
         "virtual_db": {
-            "_call_0": 0.12302780151367188
+            "_call_0": 0.042009830474853516
         },
         "train_test_split": {
-            "_call_0": 0.004014015197753906
+            "_call_0": 0.0030007362365722656
         },
         "compute_x_train": {
-            "_call_0": 10.681427717208862
+            "_call_0": 8.960166931152344
         },
         "compute_x_test": {
-            "_call_0": 1.091233730316162
+            "_call_0": 0.6193788051605225
         }
     },
     "SK_CrossValidate.py": {
-        "total-cross-validation": {
-            "_call_0": 54.275360107421875
+        "cross-validation": {
+            "_call_0": 44.71191883087158
         },
         "validator-post-processing": {
             "_call_0": 0.0
@@ -78,12 +78,12 @@
     },
     "ConfusionMatrix.py": {
         "full-process": {
-            "_call_0": 0.31549644470214844
+            "_call_0": 0.18799400329589844
         }
     },
     "Descriptives.py": {
         "full-process": {
-            "_call_0": 0.0010006427764892578
+            "_call_0": 0.0
         }
     }
 }
