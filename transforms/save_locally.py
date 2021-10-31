@@ -1,9 +1,9 @@
-import pandas as pd
 import tools.consumer_tools as ct
 import tools.file_system as fs
 import tools.py_tools as pyt
+import use_context
 import os
-import json
+
 
 class Transform:
 
@@ -38,21 +38,22 @@ class Transform:
 
     def __call__(self, datasets: dict):
 
-        for name, dataset in ct.transform_gate(datasets):
-            # TODO create dataset folders & create partition folder
-            root_pathname = fs.make_dir(os.path.join(self.dir_pathname, name))
-            partition_pathname = fs.make_dir(os.path.join(root_pathname, f'{self.partition}_partition'))
-            row_pathname = fs.make_dir(os.path.join(partition_pathname, 'rows'))
-            dataset.data.columns\
-                .to_series()\
-                .to_csv(os.path.join(partition_pathname, 'headers.csv'), index=False, sep='\t')
-            virtual_db = dict()
-            dataset.data.apply(self.__to_csv__, args=[row_pathname, virtual_db], axis=1)
+        with use_context.performance_profile(fs.filename(), "batch", "transforms"):
+            for name, dataset in ct.transform_gate(datasets):
+                # TODO create dataset folders & create partition folder
+                root_pathname = fs.make_dir(os.path.join(self.dir_pathname, name))
+                partition_pathname = fs.make_dir(os.path.join(root_pathname, f'{self.partition}_partition'))
+                row_pathname = fs.make_dir(os.path.join(partition_pathname, 'rows'))
+                dataset.data.columns\
+                    .to_series()\
+                    .to_csv(os.path.join(partition_pathname, 'headers.csv'), index=False, sep='\t')
+                virtual_db = dict()
+                dataset.data.apply(self.__to_csv__, args=[row_pathname, virtual_db], axis=1)
 
-            # TODO save virtual database as json to partition
-            fs.save_json(os.path.join(partition_pathname, 'virtual_db.json'), virtual_db)
+                # TODO save virtual database as json to partition
+                fs.save_json(os.path.join(partition_pathname, 'virtual_db.json'), virtual_db)
 
-        self.partition += 1
-        return datasets
+            self.partition += 1
+            return datasets
 
 

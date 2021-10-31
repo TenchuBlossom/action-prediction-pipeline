@@ -1,5 +1,7 @@
 import tools.consumer_tools as ct
-from tools.performance_profile_tools import PerformanceProfile
+import tools.file_system as fs
+import use_context
+
 
 class Transform:
 
@@ -18,9 +20,9 @@ class Transform:
 
         return new_col_name
 
-    def __call__(self, datasets: dict, performance_profiler: PerformanceProfile):
+    def __call__(self, datasets: dict):
 
-        with performance_profiler('transform: clean_features', 'batch'):
+        with use_context.performance_profile(fs.filename(), "batch", "transforms"):
             check_for_dups = self.config.get('check_for_duplicates', False)
 
             for key, dataset in ct.transform_gate(datasets):
@@ -32,4 +34,4 @@ class Transform:
                 if dup_after_rename:
                     raise KeyError('Clean Features Transform: Duplicate feature detected, this will cause concat errors')
 
-        return datasets
+            return datasets

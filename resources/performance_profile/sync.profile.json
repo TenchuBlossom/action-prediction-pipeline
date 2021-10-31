@@ -1,0 +1,71 @@
+{
+    "CB2Consumer.py": {
+        "read-data": {
+            "batch_call_0": 3.6213622093200684,
+            "batch_call_1": 2.4775235652923584,
+            "batch_call_2": 1.3859050273895264,
+            "batch_call_3": 0.0
+        }
+    },
+    "transforms": {
+        "clean_features.py": {
+            "batch_call_0": 0.08048224449157715,
+            "batch_call_1": 0.05842328071594238,
+            "batch_call_2": 0.030266284942626953
+        },
+        "remove_features.py": {
+            "batch_call_0": 0.40338993072509766,
+            "batch_call_1": 0.2641916275024414,
+            "batch_call_2": 0.14162802696228027
+        },
+        "clean_labels.py": {
+            "batch_call_0": 0.05232405662536621,
+            "batch_call_1": 0.032473087310791016,
+            "batch_call_2": 0.020319461822509766
+        },
+        "convert_dtypes.py": {
+            "batch_call_0": 1.997331142425537,
+            "batch_call_1": 1.3282594680786133,
+            "batch_call_2": 0.6998283863067627
+        },
+        "concat_datasets.py": {
+            "batch_call_0": 0.6501185894012451,
+            "batch_call_1": 0.7076015472412109,
+            "batch_call_2": 0.6453292369842529
+        },
+        "transform_gate.py": {
+            "batch_call_0": 0.0,
+            "batch_call_1": 0.0,
+            "batch_call_2": 0.0
+        },
+        "change_nans.py": {
+            "batch_call_0": 0.18146228790283203,
+            "batch_call_1": 0.31995511054992676,
+            "batch_call_2": 0.3413045406341553
+        },
+        "save_locally.py": {
+            "batch_call_0": 11.099333047866821,
+            "batch_call_1": 7.6205596923828125,
+            "batch_call_2": 3.6867516040802
+        },
+        "terminate.py": {
+            "batch_call_0": 0.02007436752319336,
+            "batch_call_1": 0.02213144302368164,
+            "batch_call_2": 0.010040283203125
+        }
+    },
+    "CB2Provider.py": {
+        "virtual_db": {
+            "_call_0": 0.03209328651428223
+        },
+        "train_test_split": {
+            "_call_0": 0.0
+        },
+        "compute_x_train": {
+            "_call_0": 8.394865274429321
+        },
+        "compute_x_test": {
+            "_call_0": 0.5962004661560059
+        }
+    }
+}

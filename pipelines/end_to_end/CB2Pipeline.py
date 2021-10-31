@@ -33,9 +33,9 @@ class CB2Pipeline:
     def execute_downstream(self):
         x_train, x_test, y_train, y_test, features = self.provider.provide()
 
-        # self.trainable.train(x_train, y_train)
-        # self.trainable.evaluate(x_test, y_test)
-        # self.trainable.diagnose()
+        self.trainable.train(x_train, y_train)
+        self.trainable.evaluate(x_test, y_test)
+        self.trainable.diagnose()
         use_context.performance_profile.close()
 
         a = 0
@@ -44,6 +44,6 @@ class CB2Pipeline:
 if __name__ == "__main__":
 
     pipe = CB2Pipeline('../../configs/cb2/pipeline.config.yaml')
-    pipe.execute_downstream()
+    pipe.execute_clean()
 
     a = 0

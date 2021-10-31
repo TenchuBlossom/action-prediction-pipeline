@@ -68,7 +68,6 @@ class Provider:
             x_test = virtual_db.compute(x_test, dtype=dtype, middleware=[self.__check_header_equality__])
             x_test = x_test.drop(y_names, axis=1)
 
-
         x_train = x_train.to_numpy()
         x_test = x_test.to_numpy()
         y_train = y_train.to_numpy().flatten()
