@@ -38,12 +38,10 @@ class CB2Pipeline:
         self.trainable.diagnose()
         use_context.performance_profile.close()
 
-        a = 0
-
 
 if __name__ == "__main__":
 
     pipe = CB2Pipeline('../../configs/cb2/pipeline.config.yaml')
-    pipe.execute_clean()
+    pipe.execute_downstream()
 
     a = 0

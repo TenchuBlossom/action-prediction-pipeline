@@ -21,6 +21,7 @@ trainable:
   model:
     name: CatboostClassifier
     parameters:
+       allow_writing_files: false
 
 
 diagnostics:

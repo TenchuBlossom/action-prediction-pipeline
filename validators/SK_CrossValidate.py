@@ -15,7 +15,7 @@ class Validator:
     def __call__(self, model, x, y) -> dict:
 
         # TODO need to organise data into consistent format
-        with use_context.performance_profile("total-cross-validation"):
+        with use_context.performance_profile("cross-validation"):
             scores = cross_validate(model, x, y, **self.config)
 
         with use_context.performance_profile("validator-post-processing"):

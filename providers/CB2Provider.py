@@ -42,7 +42,7 @@ class Provider:
         with use_context.performance_profile("train_test_split"):
             # TODO shuffle & create train test splits
             if stratify:
-                x_train, x_test, y_train, y_test = train_test_split(
+                train, test, _, _ = train_test_split(
                     virtual_dataset.drop([y_target], axis=1),
                     virtual_dataset[y_target],
                     test_size=test_size,
@@ -51,7 +51,7 @@ class Provider:
                     random_state=random_seed
                 )
             else:
-                x_train, x_test, y_train, y_test = train_test_split(
+                train, test, _, _ = train_test_split(
                     virtual_dataset.drop([y_target], axis=1),
                     virtual_dataset[y_target],
                     test_size=test_size,
@@ -59,20 +59,22 @@ class Provider:
                     random_state=random_seed
                 )
 
+        features = train.columns
         with use_context.performance_profile("compute_x_train"):
-            x_train = virtual_db.compute(x_train, dtype=dtype, middleware=[self.__check_header_equality__])
-            features = x_train.columns
-            x_train = x_train.drop(y_names, axis=1)
+            train = virtual_db.compute(train, dtype=dtype, middleware=[self.__check_header_equality__])
+            x_train = train.drop(y_names, axis=1)
+            y_train = train[y_target]
 
         with use_context.performance_profile("compute_x_test"):
-            x_test = virtual_db.compute(x_test, dtype=dtype, middleware=[self.__check_header_equality__])
-            x_test = x_test.drop(y_names, axis=1)
+            test = virtual_db.compute(test, dtype=dtype, middleware=[self.__check_header_equality__])
+            x_test = test.drop(y_names, axis=1)
+            y_test = test[y_target]
 
         x_train = x_train.to_numpy()
         x_test = x_test.to_numpy()
         y_train = y_train.to_numpy().flatten()
         y_test = y_test.to_numpy().flatten()
-        feature = features.to_numpy()
+        features = features.to_numpy()
         return x_train, x_test, y_train, y_test, features
 
 
