@@ -1,0 +1,89 @@
+{
+    "CB2Consumer.py": {
+        "read-data": {
+            "batch_call_0": 3.4610815048217773,
+            "batch_call_1": 2.3214118480682373,
+            "batch_call_2": 1.2530312538146973,
+            "batch_call_3": 0.0
+        }
+    },
+    "transforms": {
+        "clean_features.py": {
+            "batch_call_0": 0.07636690139770508,
+            "batch_call_1": 0.04999375343322754,
+            "batch_call_2": 0.02701878547668457
+        },
+        "remove_features.py": {
+            "batch_call_0": 0.45000505447387695,
+            "batch_call_1": 0.3016626834869385,
+            "batch_call_2": 0.15398550033569336
+        },
+        "clean_labels.py": {
+            "batch_call_0": 0.0550084114074707,
+            "batch_call_1": 0.03799748420715332,
+            "batch_call_2": 0.0189971923828125
+        },
+        "convert_dtypes.py": {
+            "batch_call_0": 2.3510422706604004,
+            "batch_call_1": 1.562032699584961,
+            "batch_call_2": 0.8159785270690918
+        },
+        "concat_datasets.py": {
+            "batch_call_0": 0.7755441665649414,
+            "batch_call_1": 0.8380482196807861,
+            "batch_call_2": 0.7660601139068604
+        },
+        "transform_gate.py": {
+            "batch_call_0": 0.0,
+            "batch_call_1": 0.0,
+            "batch_call_2": 0.0
+        },
+        "change_nans.py": {
+            "batch_call_0": 0.15848135948181152,
+            "batch_call_1": 0.3439805507659912,
+            "batch_call_2": 0.3880448341369629
+        },
+        "save_locally.py": {
+            "batch_call_0": 11.520906448364258,
+            "batch_call_1": 7.9171812534332275,
+            "batch_call_2": 3.891062021255493
+        },
+        "terminate.py": {
+            "batch_call_0": 0.012004375457763672,
+            "batch_call_1": 0.008996725082397461,
+            "batch_call_2": 0.004996776580810547
+        }
+    },
+    "CB2Provider.py": {
+        "virtual_db": {
+            "_call_0": 0.12302780151367188
+        },
+        "train_test_split": {
+            "_call_0": 0.004014015197753906
+        },
+        "compute_x_train": {
+            "_call_0": 10.681427717208862
+        },
+        "compute_x_test": {
+            "_call_0": 1.091233730316162
+        }
+    },
+    "SK_CrossValidate.py": {
+        "total-cross-validation": {
+            "_call_0": 54.275360107421875
+        },
+        "validator-post-processing": {
+            "_call_0": 0.0
+        }
+    },
+    "ConfusionMatrix.py": {
+        "full-process": {
+            "_call_0": 0.31549644470214844
+        }
+    },
+    "Descriptives.py": {
+        "full-process": {
+            "_call_0": 0.0010006427764892578
+        }
+    }
+}

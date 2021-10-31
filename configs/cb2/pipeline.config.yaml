@@ -4,4 +4,4 @@ pipeline:
 
 performance_profile:
   name: 'sync'
-  overwrite_profile: true
+  overwrite_profile: false

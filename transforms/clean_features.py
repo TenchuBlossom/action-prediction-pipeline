@@ -1,4 +1,6 @@
 import tools.consumer_tools as ct
+import tools.file_system as fs
+import use_context
 
 
 class Transform:
@@ -20,15 +22,16 @@ class Transform:
 
     def __call__(self, datasets: dict):
 
-        check_for_dups = self.config.get('check_for_duplicates', False)
+        with use_context.performance_profile(fs.filename(), "batch", "transforms"):
+            check_for_dups = self.config.get('check_for_duplicates', False)
 
-        for key, dataset in ct.transform_gate(datasets):
-            dataset.data = dataset.data.rename(columns=self.__mapper__)
+            for key, dataset in ct.transform_gate(datasets):
+                dataset.data = dataset.data.rename(columns=self.__mapper__)
 
-            if not check_for_dups: continue
+                if not check_for_dups: continue
 
-            dup_after_rename = any(dataset.data.columns.duplicated())
-            if dup_after_rename:
-                raise KeyError('Clean Features Transform: Duplicate feature detected, this will cause concat errors')
+                dup_after_rename = any(dataset.data.columns.duplicated())
+                if dup_after_rename:
+                    raise KeyError('Clean Features Transform: Duplicate feature detected, this will cause concat errors')
 
-        return datasets
+            return datasets

@@ -1,12 +1,10 @@
 import pandas as pd
-import tools.py_tools as pyt
 import tools.file_system as fs
-import os
 import tools.pipeline_tools as pt
 import tools.consumer_tools as ct
-from multiprocessing import freeze_support
-from tools.performance_profile_tools import PerformanceProfile
+import tools.py_tools as pyt
 from tqdm import tqdm
+import use_context
 
 
 class Consumer:
@@ -36,8 +34,8 @@ class Consumer:
             length = data_src.get('length', None)
 
             if data_src.get('length', None) == 'compute':
-                # then compute length of dataset
-                length = fs.compute_csv_len(src, name)
+                with use_context.performance_profile("compute-csv-length", "batch"):
+                    length = fs.compute_csv_len(src, name)
 
             datasets[dataset_name] = pt.Dataset(**{
                 'batch_loader': batch_loader,
@@ -51,17 +49,19 @@ class Consumer:
 
     def consume(self):
         # this will
-        for _, dataset in ct.transform_gate(self.datasets):
-            try:
-                chunk = next(dataset.batch_loader)
-                dataset.data = chunk
-                dataset.headers = chunk.columns
+        with use_context.performance_profile("read-data", "batch"):
+            for _, dataset in ct.transform_gate(self.datasets):
+                try:
+                    chunk = next(dataset.batch_loader)
+                    dataset.data = chunk
+                    dataset.headers = chunk.columns
 
-            except StopIteration:
-                dataset.spin_down()
-                self.completed_processes += 1
+                except StopIteration:
+                    dataset.spin_down()
+                    self.completed_processes += 1
 
     def transform(self):
+
         for transform in tqdm(self.transform_chain, desc="Applying Transforms", colour="WHITE"):
             self.datasets = transform(self.datasets)
 
@@ -70,11 +70,4 @@ class Consumer:
 
 
 if __name__ == '__main__':
-    import tools.py_tools as pyt
-
-    freeze_support()
-    consumer = Consumer(fs.path('../configs/cb2/data.config.yaml'))
-    consumer.consume()
-    consumer.transform()
-    out = consumer.provide()
-    a = 0
+    pass

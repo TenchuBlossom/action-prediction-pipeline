@@ -1,6 +1,7 @@
 import tools.py_tools as pyt
 import tools.consumer_tools as ct
-
+import tools.file_system as fs
+import use_context
 
 class Transform:
 
@@ -8,22 +9,24 @@ class Transform:
         self.config = config
 
     def __call__(self, datasets: dict):
-        default = self.config['default']
-        column_types = self.config.get('columns', None)
 
-        for _, dataset in ct.transform_gate(datasets):
-            dtype_map = dict()
-            for column in dataset.data.columns:
+        with use_context.performance_profile(fs.filename(), "batch", "transforms"):
+            default = self.config['default']
+            column_types = self.config.get('columns', None)
 
-                if column_types:
-                    dtype = column_types.get(column, None)
+            for _, dataset in ct.transform_gate(datasets):
+                dtype_map = dict()
+                for column in dataset.data.columns:
 
-                    if dtype:
-                        dtype_map[column] = pyt.get_dtype_instance(dtype)
-                        continue
+                    if column_types:
+                        dtype = column_types.get(column, None)
 
-                dtype_map[column] = pyt.get_dtype_instance(default)
+                        if dtype:
+                            dtype_map[column] = pyt.get_dtype_instance(dtype)
+                            continue
 
-            dataset.data = dataset.data.astype(dtype_map)
+                    dtype_map[column] = pyt.get_dtype_instance(default)
 
-        return datasets
+                dataset.data = dataset.data.astype(dtype_map)
+
+            return datasets

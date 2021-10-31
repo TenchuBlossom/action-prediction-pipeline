@@ -1,4 +1,6 @@
 import tools.consumer_tools as ct
+import tools.file_system as fs
+import use_context
 
 
 class Transform:
@@ -8,8 +10,9 @@ class Transform:
 
     def __call__(self, datasets: dict):
 
-        value = self.config['value']
-        for _, dataset in ct.transform_gate(datasets):
-            dataset.data = dataset.data.fillna(value)
+        with use_context.performance_profile(fs.filename(), "batch", "transforms"):
+            value = self.config['value']
+            for _, dataset in ct.transform_gate(datasets):
+                dataset.data = dataset.data.fillna(value)
 
-        return datasets
+            return datasets
