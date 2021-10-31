@@ -47,6 +47,6 @@ class CB2Pipeline:
 if __name__ == "__main__":
 
     pipe = CB2Pipeline('../../configs/cb2/pipeline.config.yaml')
-    pipe.execute_downstream()
+    pipe.execute_clean()
 
     a = 0
