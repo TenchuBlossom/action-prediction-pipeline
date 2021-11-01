@@ -3,5 +3,5 @@ pipeline:
   train_config:  '../../configs/cb2/trainable.config.yaml'
 
 performance_profile:
-  name: 'sync'
+  name: 'multiprocess'
   overwrite_profile: false
