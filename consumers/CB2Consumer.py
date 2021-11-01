@@ -5,6 +5,7 @@ import tools.consumer_tools as ct
 import tools.py_tools as pyt
 from tqdm import tqdm
 import use_context
+import ray
 
 
 class Consumer:
@@ -43,7 +44,7 @@ class Consumer:
                 'length': length,
                 'metadata': metadata,
                 'src': src,
-            })
+            }).remote()
 
         self.total_processes = len(datasets)
         self.datasets = datasets

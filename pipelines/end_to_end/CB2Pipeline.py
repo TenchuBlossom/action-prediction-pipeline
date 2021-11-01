@@ -1,10 +1,12 @@
 import tools.file_system as fs
 import tools.pipeline_tools as pt
 import tools.py_tools as pyt
+from multiprocessing import freeze_support
 from tools.performance_profile_tools import PerformanceProfile
 from tools.constants import Constants
-import use_context
 from tqdm import tqdm
+import ray
+import use_context
 cs = Constants()
 
 
@@ -45,7 +47,8 @@ class CB2Pipeline:
 
 
 if __name__ == "__main__":
-
+    freeze_support()
+    ray.init()
     pipe = CB2Pipeline('../../configs/cb2/pipeline.config.yaml')
     pipe.execute_clean()
 
