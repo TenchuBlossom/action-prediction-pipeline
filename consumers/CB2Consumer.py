@@ -3,9 +3,10 @@ import tools.file_system as fs
 import tools.pipeline_tools as pt
 import tools.consumer_tools as ct
 import tools.py_tools as pyt
+from custom_types.Data import Dataset
 from tqdm import tqdm
-import use_context
 import ray
+import use_context
 
 
 class Consumer:
@@ -31,7 +32,6 @@ class Consumer:
             sep = data_src.get('sep', None)
             metadata = data_src['metadata']
             dataset_name = name
-            batch_loader = pd.read_csv(src, sep=sep, chunksize=self.chunksize, dtype=str)
             length = data_src.get('length', None)
 
             if data_src.get('length', None) == 'compute':
@@ -39,12 +39,16 @@ class Consumer:
                     length = fs.compute_csv_len(src, name)
 
             self.total_length += length
-            datasets[dataset_name] = pt.Dataset(**{
-                'batch_loader': batch_loader,
+            datasets[dataset_name] = Dataset.remote(**{
+                'batch_loader_config': {
+                    'filepath_or_buffer': src,
+                    'sep': sep,
+                    'chunksize': self.chunksize,
+                    'dtype': str
+                },
                 'length': length,
                 'metadata': metadata,
-                'src': src,
-            }).remote()
+            })
 
         self.total_processes = len(datasets)
         self.datasets = datasets

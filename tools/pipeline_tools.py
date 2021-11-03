@@ -56,27 +56,4 @@ def compile_provider(config: dict):
     return provider
 
 
-class Dataset:
-
-    def __init__(self, data=None, batch_loader=None, length=None, metadata=None, src=None):
-
-        self.data = data
-        self.batch_loader = batch_loader
-        self.length = length
-        self.metadata = metadata
-        self.src = src
-        self.headers = data.columns if data is not None else None
-        self.eligible_for_transformation = True
-        self.batch_loader_exhausted = False
-
-    def reset(self):
-        self.eligible_for_transformation = True
-        self.data = None
-
-    def spin_down(self):
-        self.batch_loader_exhausted = True
-        self.data = None
-        self.batch_loader.close()
-        self.batch_loader = None
-
 
