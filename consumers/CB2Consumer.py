@@ -32,6 +32,7 @@ class Consumer:
             metadata = data_src['metadata']
             dataset_name = name
             length = data_src.get('length', None)
+            resources = data_src.get('resources', {'num_cpus': 1})
 
             if data_src.get('length', None) == 'compute':
                 with use_context.performance_profile("compute-csv-length", "batch"):
@@ -39,7 +40,7 @@ class Consumer:
 
             self.total_length += length
             datasets[dataset_name] = Dataset.\
-                options(num_cpus=1, name=dataset_name).\
+                options(name=dataset_name, **resources).\
                 remote(**{
                     'batch_loader_config': {
                         'filepath_or_buffer': src,
@@ -82,6 +83,9 @@ class Consumer:
             with use_context.performance_profile(fs.get_class_filename(transform), "batch", 'transforms'):
 
                 dummy_exhausted_datasets, sync_process, ignore_gate = ct.get_transform_params(transform)
+
+                if fs.get_class_filename(transform) == 'save_locally':
+                    a = 0
 
                 # TODO Check that dummy-exhausted works when one of the datasets runs out
                 datasets = ct.transform_gate(self.datasets, ignore_gate, dummy_exhausted_datasets)
