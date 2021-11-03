@@ -1,4 +1,5 @@
 import tools.consumer_tools as ct
+from custom_types.Data import State
 import tools.file_system as fs
 import use_context
 
@@ -20,18 +21,16 @@ class Transform:
 
         return new_col_name
 
-    def __call__(self, datasets: dict):
+    def __call__(self, state: State):
 
-        with use_context.performance_profile(fs.filename(), "batch", "transforms"):
-            check_for_dups = self.config.get('check_for_duplicates', False)
+        check_for_dups = self.config.get('check_for_duplicates', False)
 
-            for key, dataset in ct.transform_gate(datasets):
-                dataset.data = dataset.data.rename(columns=self.__mapper__)
+        state.data = state.data.rename(columns=self.__mapper__)
 
-                if not check_for_dups: continue
+        if not check_for_dups: return state
 
-                dup_after_rename = any(dataset.data.columns.duplicated())
-                if dup_after_rename:
-                    raise KeyError('Clean Features Transform: Duplicate feature detected, this will cause concat errors')
+        dup_after_rename = any(state.data.columns.duplicated())
+        if dup_after_rename:
+            raise KeyError('Clean Features Transform: Duplicate feature detected, this will cause concat errors')
 
-            return datasets
+        return state

@@ -1,19 +1,25 @@
-import tools.file_system as fs
-import use_context
+import ray
+from custom_types.Data import State
+from collections import OrderedDict
 
 
 class Transform:
 
     def __init__(self, config):
         self.config = config
+        self.sync_process = True
 
     def __call__(self, datasets: dict) -> dict:
-        with use_context.performance_profile(fs.filename(), "batch", "transforms"):
-            eligible_for_processing = self.config
-            for name, dataset in datasets.items():
-                if name not in eligible_for_processing:
-                    dataset.eligible_for_transformation = False
-                    continue
-                dataset.eligible_for_transformation = True
 
-            return datasets
+        eligible_for_processing = self.config['eligible_for_processing']
+
+        worker_ids = []
+        for name, dataset in datasets.items():
+            if name not in eligible_for_processing:
+                worker_ids.append(dataset.update_state.remote(State(eligible_for_transformation=False)))
+                continue
+
+            worker_ids.append(dataset.update_state.remote(State(eligible_for_transformation=True)))
+
+        ray.wait(worker_ids, num_returns=len(worker_ids), timeout=60.0)
+        return datasets
