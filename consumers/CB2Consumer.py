@@ -40,16 +40,18 @@ class Consumer:
                     length = fs.compute_csv_len(src, name)
 
             self.total_length += length
-            datasets[dataset_name] = Dataset.options(num_cpus=1).remote(**{
-                'batch_loader_config': {
-                    'filepath_or_buffer': src,
-                    'sep': sep,
-                    'chunksize': self.chunksize,
-                    'dtype': str
-                },
-                'length': length,
-                'metadata': metadata,
-            })
+            datasets[dataset_name] = Dataset.\
+                options(num_cpus=1, name=dataset_name).\
+                remote(**{
+                    'batch_loader_config': {
+                        'filepath_or_buffer': src,
+                        'sep': sep,
+                        'chunksize': self.chunksize,
+                        'dtype': str
+                    },
+                    'length': length,
+                    'metadata': metadata,
+                })
 
         self.total_processes = len(datasets)
         self.datasets = datasets

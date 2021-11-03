@@ -17,19 +17,20 @@ class Transform:
         keep_datasets = self.config.get('keep_datasets', True)
 
         actor = Dataset.options(num_cpus=1).remote()
-        ray.wait(actor.merge_actor_data.remote([actor_id for _, actor_id in datasets]))
+        actor_id = actor.merge_actor_data.remote([actor_id for _, actor_id in datasets])
+        ready, _ = ray.wait([actor_id], timeout=60.0)
 
-        states = ray.get([dataset.get_state.remote(mode='just_data') for _, dataset in datasets])
-        data_to_concat = [state.data for state in states]
-
-        new_data = pd.concat(data_to_concat)
+        # states = ray.get([dataset.get_state.remote(mode='just_data') for _, dataset in datasets])
+        # data_to_concat = [state.data for state in states]
+        #
+        # new_data = pd.concat(data_to_concat)
 
         if keep_datasets:
-            datasets[output_name] = Dataset.options(num_cpus=1).remote(**{'data': new_data})
+            datasets[output_name] = actor
             return datasets
 
         datasets = dict()
-        datasets[output_name] = Dataset.options(num_cpus=1).remote(**{'data': new_data})
+        datasets[output_name] = actor
         return datasets
 
 

@@ -89,6 +89,9 @@ transforms:
     partition_on_columns:
       - CB2_CAMP
       - CB2_beta_Arrestin
+    resouces:
+      concat-data:
+        num_cpu: 3
 
   terminate:
     sync_headers: true
