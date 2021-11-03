@@ -1,10 +1,7 @@
-import yaml
 import tools.file_system as fs
 from tqdm import tqdm
 from tools.constants import Constants
-import tools.pipeline_tools as pt
-
-import pandas as pd
+import ray
 cs = Constants()
 
 
@@ -45,12 +42,12 @@ def transform_gate(datasets: dict, ignore_gate=False, dummy_exhausted_datasets=F
 
     gated_datasets = []
     for key, dataset in datasets.items():
+        state = ray.get(dataset.get_state.remote(mode='just_metadata'))
+        if not state.eligible_for_transformation: continue
 
-        if not dataset.eligible_for_transformation: continue
-
-        if dataset.batch_loader_exhausted:
+        if state.batch_loader_exhausted:
             if dummy_exhausted_datasets:
-                dataset.data = pd.DataFrame(None, columns=dataset.headers)
+                ray.wait(dataset.init_dummy_data.remote(), timeout=60.0)
                 gated_datasets.append((key, dataset))
 
             continue
@@ -58,6 +55,35 @@ def transform_gate(datasets: dict, ignore_gate=False, dummy_exhausted_datasets=F
         gated_datasets.append((key, dataset))
 
     return gated_datasets
+
+
+def get_transform_params(transform):
+
+    dummy_exhausted_datasets = False
+    sync_process = False
+    ignore_gate = False
+
+    if hasattr(transform, 'dummy_exhausted_datasets'):
+        dummy_exhausted_datasets = transform.dummy_exhausted_datasets
+
+    elif transform.config.get('dummy_exhausted_datasets', None) is not None:
+        dummy_exhausted_datasets = transform.config['dummy_exhausted_datasets']
+
+    if hasattr(transform, 'sync_process'):
+        sync_process = True
+
+    elif transform.config.get('sync_process', None) is not None:
+        sync_process = transform.config['sync_process']
+
+    if hasattr(transform, 'ignore_gate'):
+        ignore_gate = transform.ignore_gate
+
+    elif transform.config.get('ignore_gate', None) is not None:
+        ignore_gate = transform.config['ignore_gate']
+
+    return dummy_exhausted_datasets, sync_process, ignore_gate
+
+
 
 
 

@@ -1,6 +1,7 @@
 import numpy as np
 import tools.consumer_tools as ct
 import tools.file_system as fs
+from custom_types.Data import State
 import use_context
 
 
@@ -21,18 +22,15 @@ class Transform:
 
         return np.nan
 
-    def __call__(self, datasets: dict):
+    def __call__(self, state: State):
 
-        with use_context.performance_profile(fs.filename(), "batch", "transforms"):
-            labels = self.config['labels']
+        labels = self.config['labels']
 
-            for _, dataset in ct.transform_gate(datasets):
-                data = dataset.data
-                for column, label in labels.items():
-                    possible_values = label['possible_values']
-                    relabels = label['relabels']
-                    data[column] = data[column].apply(self.__mapper__, args=[possible_values, relabels])
+        for column, label in labels.items():
+            possible_values = label['possible_values']
+            relabels = label['relabels']
+            state.data[column] = state.data[column].apply(self.__mapper__, args=[possible_values, relabels])
 
-                data.dropna(subset=list(labels.keys()), inplace=True)
+        state.data.dropna(subset=list(labels.keys()), inplace=True)
 
-            return datasets
+        return state

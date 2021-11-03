@@ -1,35 +1,43 @@
-import numpy as np
 import pandas as pd
-import tools.consumer_tools as ct
 import tools.pipeline_tools as pt
-import tools.file_system as fs
-import use_context
+from custom_types.Data import Dataset
+import ray
 
 
 class Transform:
 
     def __init__(self, config):
         self.config = config
-        self.old_headers = None
+        self.dummy_exhausted_datasets = config.get('dummy_exhausted_datasets', True)
+        self.sync_process = config.get('sync_process', True)
 
     def __call__(self, datasets: dict) -> dict:
 
-        with use_context.performance_profile(fs.filename(), "batch", "transforms"):
-            output_name = self.config.get('output_name', 'concat_dataset')
-            keep_datasets = self.config.get('keep_datasets', True)
+        output_name = self.config.get('output_name', 'concat_dataset')
+        keep_datasets = self.config.get('keep_datasets', True)
 
-            data_to_concat = [dataset.data for _, dataset in ct.transform_gate(datasets, dummy_exhausted_datasets=True)]
+        actor = Dataset.options(num_cpus=1).remote()
+        ray.wait(actor.merge_actor_data.remote([actor_id for _, actor_id in datasets]))
 
-            new_data = pd.concat(data_to_concat)
-            if self.old_headers is not None:
-                equal = self.old_headers.equals(new_data.columns)
-            else:
-                self.old_headers = new_data.columns
+        states = ray.get([dataset.get_state.remote(mode='just_data') for _, dataset in datasets])
+        data_to_concat = [state.data for state in states]
 
-            if keep_datasets:
-                datasets[output_name] = pt.Dataset(data=new_data)
-                return datasets
+        new_data = pd.concat(data_to_concat)
 
-            datasets = dict()
-            datasets[output_name] = pt.Dataset(data=new_data)
+        if keep_datasets:
+            datasets[output_name] = Dataset.options(num_cpus=1).remote(**{'data': new_data})
             return datasets
+
+        datasets = dict()
+        datasets[output_name] = Dataset.options(num_cpus=1).remote(**{'data': new_data})
+        return datasets
+
+
+
+# CHECK TO SEE IF THE DUMMY DATASETS WORK AND MERGE HEADER CORRECTLY
+# Put this in constructor self.old_headers = None
+
+# if self.old_headers is not None:
+#     equal = self.old_headers.equals(new_data.columns)
+# else:
+#     self.old_headers = new_data.columns

@@ -65,3 +65,10 @@ def convert_dtype(value, dtype: str):
     if dtype == 'bool': return bool(value)
 
 
+def has_attr(object_inst: object, attribute: str):
+
+    has = hasattr(object_inst, attribute)
+
+
+
+
