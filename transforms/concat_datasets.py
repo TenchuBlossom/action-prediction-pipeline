@@ -16,8 +16,9 @@ class Transform:
 
         output_name = self.config.get('output_name', 'concat_dataset')
         keep_datasets = self.config.get('keep_datasets', True)
+        resources = self.config.get('resources', {'num_cpus': 1})
 
-        actor = Dataset.options(num_cpus=1).remote()
+        actor = Dataset.options(name=output_name, **resources).remote()
         actor_id = actor.merge_actor_data.remote([actor_id for _, actor_id in datasets.items()])
         ray.wait([actor_id], timeout=60.0)
 

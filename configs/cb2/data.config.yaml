@@ -9,6 +9,8 @@ data_sources:
     src: "../data/cb2/test_data/CB2_5tzy_all_action.csv"
     length: 500
     old_length: 98799
+    resources:
+      num_cpus: 1
 
   - name: 'CB2_6kpc'
     metadata:  'raw data from cb2 dataset'
@@ -16,6 +18,8 @@ data_sources:
     src: "../data/cb2/test_data/CB2_6kpc_all_action.csv"
     length: 1500
     old_length: 91064
+    resources:
+      num_cpus: 1
 
   - name: 'CB2_6kpf'
     metadata:  'raw data from cb2 dataset'
@@ -23,6 +27,8 @@ data_sources:
     src: "../data/cb2/test_data/CB2_6kpf_all_action.csv"
     length: 1000
     old_length: 87141
+    resources:
+      num_cpus: 1
 
 transforms:
 
@@ -75,6 +81,8 @@ transforms:
   concat_datasets:
     output_name: concat-data
     keep_datasets: true
+    resources:
+      num_cpus: 3
 
   transform_gate:
     eligible_for_processing:
@@ -90,9 +98,6 @@ transforms:
     partition_on_columns:
       - CB2_CAMP
       - CB2_beta_Arrestin
-    resouces:
-      concat-data:
-        num_cpu: 3
 
   terminate:
     sync_headers: true

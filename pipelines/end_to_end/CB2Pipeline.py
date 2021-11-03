@@ -49,7 +49,7 @@ class CB2Pipeline:
 if __name__ == "__main__":
     freeze_support()
     ray.init()
+    global_res = ray.available_resources()
     pipe = CB2Pipeline('../../configs/cb2/pipeline.config.yaml')
     pipe.execute_clean()
-
     a = 0

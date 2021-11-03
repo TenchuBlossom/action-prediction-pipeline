@@ -2,6 +2,7 @@ import tools.file_system as fs
 from tqdm import tqdm
 from tools.constants import Constants
 import ray
+from collections import OrderedDict, Callable
 cs = Constants()
 
 
@@ -40,7 +41,8 @@ def transform_gate(datasets: dict, ignore_gate=False, dummy_exhausted_datasets=F
 
     if ignore_gate: return datasets.items()
 
-    gated_datasets = dict()
+    gated_datasets = OrderedDict()
+
     for key, dataset in datasets.items():
         state = ray.get(dataset.get_state.remote(mode='just_metadata'))
         if not state.eligible_for_transformation: continue
@@ -83,7 +85,6 @@ def get_transform_params(transform):
         ignore_gate = transform.config['ignore_gate']
 
     return dummy_exhausted_datasets, sync_process, ignore_gate
-
 
 
 
