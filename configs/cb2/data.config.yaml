@@ -77,7 +77,8 @@ transforms:
     keep_datasets: true
 
   transform_gate:
-    - concat-data
+    eligible_for_processing:
+      - concat-data
 
   change_nans:
     ignore_gate: false

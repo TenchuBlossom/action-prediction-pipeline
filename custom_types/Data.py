@@ -28,9 +28,9 @@ class Dataset:
 
         self.data = None
         self.batch_loader_config = batch_loader_config
-        self.batch_loader = pd.read_csv(**batch_loader_config)
+        self.batch_loader = pd.read_csv(**batch_loader_config) if batch_loader_config is not None else None
         self.length = length
-        self.chunk_length = None
+        self.chunk_length = len(data) if data is not None else None
         self.metadata = metadata
         self.headers = data.columns if data is not None else None
         self.eligible_for_transformation = True
@@ -77,7 +77,7 @@ class Dataset:
         states = ray.get([actor.get_state.remote(mode='just_data') for actor in actors])
         data_to_concat = [state.data for state in states]
         new_data = pd.concat(data_to_concat)
-        new_state = State(data=new_data)
+        new_state = State(data=new_data, chunk_length=len(new_data), headers=new_data.columns)
         self.update_state(new_state)
 
     def get_state(self, mode='all'):

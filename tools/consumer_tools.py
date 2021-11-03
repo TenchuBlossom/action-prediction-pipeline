@@ -40,19 +40,20 @@ def transform_gate(datasets: dict, ignore_gate=False, dummy_exhausted_datasets=F
 
     if ignore_gate: return datasets.items()
 
-    gated_datasets = []
+    gated_datasets = dict()
     for key, dataset in datasets.items():
         state = ray.get(dataset.get_state.remote(mode='just_metadata'))
         if not state.eligible_for_transformation: continue
 
         if state.batch_loader_exhausted:
             if dummy_exhausted_datasets:
-                ray.wait(dataset.init_dummy_data.remote(), timeout=60.0)
-                gated_datasets.append((key, dataset))
+                worker_id = dataset.init_dummy_data.remote()
+                ray.wait([worker_id], timeout=60.0)
+                gated_datasets[key] = dataset
 
             continue
 
-        gated_datasets.append((key, dataset))
+        gated_datasets[key] = dataset
 
     return gated_datasets
 

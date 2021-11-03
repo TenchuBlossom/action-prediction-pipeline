@@ -1,12 +1,10 @@
-import pandas as pd
 import tools.file_system as fs
-import tools.pipeline_tools as pt
 import tools.consumer_tools as ct
 import tools.py_tools as pyt
 from custom_types.Data import Dataset
 from tqdm import tqdm
+from collections import OrderedDict
 import ray
-import asyncio
 import use_context
 
 
@@ -26,7 +24,7 @@ class Consumer:
 
     def __compile_datasets__(self):
 
-        datasets = dict()
+        datasets = OrderedDict()
         for data_src in self.config['data_sources']:
             name = data_src['name']
             src = fs.path(data_src['src'])
@@ -61,7 +59,7 @@ class Consumer:
         with use_context.performance_profile("read-data", "batch"):
 
             # set processes to work async, block until all processes are done or through error if timeout
-            worker_ids = [dataset.read_data.remote() for _, dataset in ct.transform_gate(self.datasets)]
+            worker_ids = [dataset.read_data.remote() for _, dataset in ct.transform_gate(self.datasets).items()]
             ray.wait(worker_ids, num_returns=len(self.datasets), timeout=60.0)
             total_chunks = 0
 
@@ -90,11 +88,11 @@ class Consumer:
 
                 if sync_process:
                     self.datasets = transform(datasets)
-                    return
+                    continue
 
-                worker_ids = [dataset.transform.remote(transform) for _, dataset in datasets]
-                ray.wait(worker_ids, num_returns=len(self.datasets), timeout=60.0)
-                for _, dataset in self.datasets.items():
+                worker_ids = [dataset.transform.remote(transform) for _, dataset in datasets.items()]
+                ray.wait(worker_ids, num_returns=len(datasets), timeout=60.0)
+                for _, dataset in datasets.items():
                     state = ray.get(dataset.get_state.remote())
                     break
 

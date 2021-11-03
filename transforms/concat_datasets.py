@@ -1,6 +1,7 @@
 import pandas as pd
 import tools.pipeline_tools as pt
 from custom_types.Data import Dataset
+from collections import OrderedDict
 import ray
 
 
@@ -17,20 +18,14 @@ class Transform:
         keep_datasets = self.config.get('keep_datasets', True)
 
         actor = Dataset.options(num_cpus=1).remote()
-        actor_id = actor.merge_actor_data.remote([actor_id for _, actor_id in datasets])
-        ready, _ = ray.wait([actor_id], timeout=60.0)
-
-        # states = ray.get([dataset.get_state.remote(mode='just_data') for _, dataset in datasets])
-        # data_to_concat = [state.data for state in states]
-        #
-        # new_data = pd.concat(data_to_concat)
+        actor_id = actor.merge_actor_data.remote([actor_id for _, actor_id in datasets.items()])
+        ray.wait([actor_id], timeout=60.0)
 
         if keep_datasets:
             datasets[output_name] = actor
             return datasets
 
-        datasets = dict()
-        datasets[output_name] = actor
+        datasets = OrderedDict(output_name=actor)
         return datasets
 
 
