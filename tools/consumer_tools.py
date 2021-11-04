@@ -41,7 +41,7 @@ def transform_gate(datasets: dict, ignore_gate=False, dummy_exhausted_datasets=F
 
     if ignore_gate: return datasets.items()
 
-    gated_datasets = OrderedDict()
+    gated_datasets = []
 
     for key, dataset in datasets.items():
         state = ray.get(dataset.get_state.remote(mode='just_metadata'))
@@ -55,7 +55,7 @@ def transform_gate(datasets: dict, ignore_gate=False, dummy_exhausted_datasets=F
 
             continue
 
-        gated_datasets[key] = dataset
+        gated_datasets.append(key)
 
     return gated_datasets
 

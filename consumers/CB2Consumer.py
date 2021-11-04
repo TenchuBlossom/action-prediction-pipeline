@@ -90,15 +90,15 @@ class Consumer:
                 #     a = 0
 
                 # TODO Check that dummy-exhausted works when one of the datasets runs out
-                datasets = ct.transform_gate(self.datasets, ignore_gate, dummy_exhausted_datasets)
+                gated_datasets = ct.transform_gate(self.datasets, ignore_gate, dummy_exhausted_datasets)
 
                 if sync_process:
-                    name = fs.get_class_filename(transform)
-                    if fs.get_class_filename(transform) == 'terminate':
-                        self.datasets = transform(self.datasets)
-                    else:
-                        self.datasets = transform(datasets)
+                    self.datasets = transform(self.datasets)
                     continue
+
+                datasets = OrderedDict()
+                for key in gated_datasets:
+                    datasets[key] = self.datasets[key]
 
                 worker_ids = [dataset.transform.remote(transform) for _, dataset in datasets.items()]
                 ray.wait(worker_ids, num_returns=len(datasets), timeout=60.0)
