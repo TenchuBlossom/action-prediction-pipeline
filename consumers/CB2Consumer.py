@@ -4,6 +4,7 @@ import tools.py_tools as pyt
 from custom_types.Data import Dataset
 from tqdm import tqdm
 from collections import OrderedDict
+import tools.ray_tools as rt
 import ray
 import use_context
 
@@ -32,7 +33,7 @@ class Consumer:
             metadata = data_src['metadata']
             dataset_name = name
             length = data_src.get('length', None)
-            resources = data_src.get('resources', {'num_cpus': 1})
+            resources = rt.init_dataset_resources(data_src, ['resources'])
 
             if data_src.get('length', None) == 'compute':
                 with use_context.performance_profile("compute-csv-length", "batch"):
@@ -42,6 +43,7 @@ class Consumer:
             datasets[dataset_name] = Dataset.\
                 options(name=dataset_name, **resources).\
                 remote(**{
+                    'name': dataset_name,
                     'batch_loader_config': {
                         'filepath_or_buffer': src,
                         'sep': sep,
@@ -84,14 +86,18 @@ class Consumer:
 
                 dummy_exhausted_datasets, sync_process, ignore_gate = ct.get_transform_params(transform)
 
-                if fs.get_class_filename(transform) == 'save_locally':
-                    a = 0
+                # if fs.get_class_filename(transform) == 'save_locally':
+                #     a = 0
 
                 # TODO Check that dummy-exhausted works when one of the datasets runs out
                 datasets = ct.transform_gate(self.datasets, ignore_gate, dummy_exhausted_datasets)
 
                 if sync_process:
-                    self.datasets = transform(datasets)
+                    name = fs.get_class_filename(transform)
+                    if fs.get_class_filename(transform) == 'terminate':
+                        self.datasets = transform(self.datasets)
+                    else:
+                        self.datasets = transform(datasets)
                     continue
 
                 worker_ids = [dataset.transform.remote(transform) for _, dataset in datasets.items()]

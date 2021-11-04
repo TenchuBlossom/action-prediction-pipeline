@@ -1,25 +1,27 @@
-import tools.file_system as fs
-import use_context
+from collections import OrderedDict
+import ray
+
 
 class Transform:
 
     def __init__(self, config):
         self.config = config
+        self.sync_process = True
 
-    def __call__(self, datasets: dict):
+    def __call__(self, datasets: OrderedDict):
 
-        with use_context.performance_profile(fs.filename(), "batch", "transforms"):
-            clean_up = self.config.get('clean_up', None)
-            out_datasets = dict()
-            for dataset_name, dataset in datasets.items():
-                dataset.headers = dataset.data.columns
-                dataset.reset()
+        clean_up = self.config.get('clean_up', None)
+        out_datasets = OrderedDict()
 
-                if clean_up is not None:
-                    if dataset_name not in clean_up:
-                        out_datasets[dataset_name] = dataset
-                    continue
+        for dataset_name, dataset in datasets.items():
+            if clean_up is not None:
+                if dataset_name not in clean_up:
+                    out_datasets[dataset_name] = dataset
+                continue
 
-                out_datasets[dataset_name] = dataset
+            out_datasets[dataset_name] = dataset
 
-            return out_datasets
+        reset_ids = [dataset.reset.remote() for _, dataset in datasets]
+        ray.wait(reset_ids, num_returns=len(datasets), timeout=60.0)
+
+        return out_datasets

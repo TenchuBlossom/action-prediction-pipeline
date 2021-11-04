@@ -1,6 +1,12 @@
 import pandas as pd
 import ray
 from collections.abc import Callable
+import tools.file_system as fs
+from collections import OrderedDict
+import tools.py_tools as pyt
+import os
+import ray
+import asyncio
 
 
 def select(new_val, old_val):
@@ -8,24 +14,26 @@ def select(new_val, old_val):
 
 
 class State:
-    def __init__(self, eligible_for_transformation=None, batch_loader_exhausted=None, data=None, batch_loader_config=None,
-                 length=None, chunk_length=None, metadata=None, headers=None):
+    def __init__(self, name=None, eligible_for_transformation=None, batch_loader_exhausted=None, data=None,
+                 batch_loader_config=None, length=None, chunk_length=None, metadata=None, headers=None):
 
+        self.name = name
         self.data = data
         self.length = length
         self.chunk_length = chunk_length
         self.metadata = metadata
         self.batch_loader_config = batch_loader_config
-        self.headers = headers
         self.eligible_for_transformation = eligible_for_transformation
         self.batch_loader_exhausted = batch_loader_exhausted
+        self.headers = headers
 
 
 @ray.remote
 class Dataset:
 
-    def __init__(self, batch_loader_config=None, data=None, length=None, metadata=None):
+    def __init__(self, name=None, batch_loader_config=None, data=None, length=None, metadata=None):
 
+        self.name = name
         self.data = None
         self.batch_loader_config = batch_loader_config
         self.batch_loader = pd.read_csv(**batch_loader_config) if batch_loader_config is not None else None
@@ -64,20 +72,25 @@ class Dataset:
         self.update_state(new_state)
 
     def update_state(self, state: State):
+        self.name = select(state.name, self.name)
         self.data = select(state.data, self.data)
         self.batch_loader_config = select(state.batch_loader_config, self.batch_loader_config)
         self.length = select(state.length, self.length)
         self.chunk_length = select(state.chunk_length, self.chunk_length)
         self.metadata = select(state.metadata, self.metadata)
-        self.headers = select(state.headers, self.headers)
+        self.headers = self.data.columns
         self.eligible_for_transformation = select(state.eligible_for_transformation, self.eligible_for_transformation)
         self.batch_loader_exhausted = select(state.batch_loader_exhausted, self.batch_loader_exhausted)
 
-    def merge_actor_data(self, actors):
+    def merge_actor_data(self, actors: list, name=None):
         states = ray.get([actor.get_state.remote(mode='just_data') for actor in actors])
         data_to_concat = [state.data for state in states]
         new_data = pd.concat(data_to_concat)
-        new_state = State(data=new_data, chunk_length=len(new_data), headers=new_data.columns)
+        new_state = State(
+            name=name,
+            data=new_data,
+            chunk_length=len(new_data),
+        )
         self.update_state(new_state)
 
     def get_state(self, mode='all'):
@@ -91,7 +104,8 @@ class Dataset:
                 length=self.length,
                 chunk_length=self.chunk_length,
                 metadata=self.metadata,
-                batch_loader_config=self.batch_loader_config
+                batch_loader_config=self.batch_loader_config,
+                name=self.name
             )
         elif mode == 'just_metadata':
             return State(
@@ -100,7 +114,8 @@ class Dataset:
                 length=self.length,
                 metadata=self.metadata,
                 chunk_length=self.chunk_length,
-                batch_loader_config=self.batch_loader_config
+                batch_loader_config=self.batch_loader_config,
+                name=self.name
             )
         elif mode == 'just_headers':
             return State(headers=self.headers)
@@ -116,8 +131,11 @@ class Dataset:
                 length=self.length,
                 metadata=self.metadata,
                 chunk_length=self.chunk_length,
-                batch_loader_config=self.batch_loader_config
+                batch_loader_config=self.batch_loader_config,
+                name=self.name
             )
 
         raise ValueError(f"Dataset Error get_state(): input arg mode of {mode} is invalid. mode must be "
                          "either 'all', 'just_metadata', 'just_headers', 'just_data', 'metadata_and_headers'")
+
+
