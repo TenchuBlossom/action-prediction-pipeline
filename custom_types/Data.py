@@ -63,6 +63,10 @@ class Dataset:
         self.data = None
         self.batch_loader.close()
         self.batch_loader = None
+        self.chunk_length = 0
+
+    def terminate(self):
+        ray.actor.exit_actor()
 
     def init_dummy_data(self):
         self.data = pd.DataFrame(None, columns=self.headers)

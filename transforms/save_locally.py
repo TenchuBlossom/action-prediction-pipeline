@@ -20,9 +20,7 @@ class Transform:
         self.config = config
         self.processes = config.get('processes', 1)
         self.chunksize = config.get('chunksize', None)
-        self.pool = Pool(processes=self.processes)
 
-        self.sync_process = True
         self.index = 0
         self.partition = 0
 
@@ -30,6 +28,9 @@ class Transform:
         dir_name = pyt.get(config, ['dir_name'])
         self.dir_pathname = fs.path(os.path.join(dir_location, dir_name))
         fs.make_dir(self.dir_pathname)
+
+        # Processing Flags
+        self.sync_process = True
 
     def init_distributed_saving(self, row, row_pathname: str, process_args: list, virtual_db: dict):
         # Create args for distributed saving
@@ -53,7 +54,7 @@ class Transform:
 
         self.index += 1
 
-    def __call__(self, datasets: dict):
+    def __call__(self, datasets: dict) -> dict:
 
         # Saving per dataset is Sync. Actors can't very easily spawn there own process so we have to read data in
         state_id = [dataset.get_state.remote() for _, dataset in datasets.items()]
@@ -68,6 +69,7 @@ class Transform:
             process_args = []
 
             state.data.apply(self.init_distributed_saving, args=[row_pathname, process_args, virtual_db], axis=1, )
+            self.pool = Pool(processes=self.processes)
 
             if self.chunksize is None:
                 self.pool.map(__to_csv__, process_args)
@@ -80,7 +82,9 @@ class Transform:
 
             self.index = 0
 
-        self.partition += 0
+        self.pool.close()
+
+        self.partition += 1
         return datasets
 
     def spin_down(self):

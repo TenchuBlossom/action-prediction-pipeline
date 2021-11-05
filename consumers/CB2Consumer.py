@@ -5,6 +5,7 @@ from custom_types.Data import Dataset
 from tqdm import tqdm
 from collections import OrderedDict
 import tools.ray_tools as rt
+from mergedeep import merge
 import ray
 import use_context
 
@@ -62,11 +63,12 @@ class Consumer:
         with use_context.performance_profile("read-data", "batch"):
 
             # set processes to work async, block until all processes are done or through error if timeout
-            worker_ids = [dataset.read_data.remote() for _, dataset in ct.transform_gate(self.datasets).items()]
-            ray.wait(worker_ids, num_returns=len(self.datasets), timeout=60.0)
+            datasets = ct.transform_gate(self.datasets)
+            worker_ids = [dataset.read_data.remote() for _, dataset in datasets.items()]
+            ray.wait(worker_ids, num_returns=len(worker_ids), timeout=60.0)
             total_chunks = 0
 
-            for _, dataset in self.datasets.items():
+            for _, dataset in datasets.items():
                 state = ray.get(dataset.get_state.remote(mode='just_metadata'))
                 total_chunks += state.chunk_length
 
@@ -86,25 +88,23 @@ class Consumer:
 
                 dummy_exhausted_datasets, sync_process, ignore_gate = ct.get_transform_params(transform)
 
-                # if fs.get_class_filename(transform) == 'save_locally':
-                #     a = 0
-
                 # TODO Check that dummy-exhausted works when one of the datasets runs out
-                gated_datasets = ct.transform_gate(self.datasets, ignore_gate, dummy_exhausted_datasets)
+                datasets = ct.transform_gate(self.datasets, ignore_gate, dummy_exhausted_datasets)
 
                 if sync_process:
-                    self.datasets = transform(self.datasets)
-                    continue
+                    datasets = transform(datasets)
+                    self.datasets = ct.state_manager(
+                        previous_state=self.datasets,
+                        incoming_state=datasets,
+                        transform=transform
+                    )
 
-                datasets = OrderedDict()
-                for key in gated_datasets:
-                    datasets[key] = self.datasets[key]
+                else:
+                    worker_ids = [dataset.transform.remote(transform) for _, dataset in datasets.items()]
+                    ray.wait(worker_ids, num_returns=len(datasets), timeout=60.0)
 
-                worker_ids = [dataset.transform.remote(transform) for _, dataset in datasets.items()]
-                ray.wait(worker_ids, num_returns=len(datasets), timeout=60.0)
                 for _, dataset in datasets.items():
                     state = ray.get(dataset.get_state.remote())
-                    break
 
     def processes_completed(self):
         return self.completed_processes == self.total_processes

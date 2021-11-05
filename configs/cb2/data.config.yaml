@@ -1,28 +1,28 @@
 consumer:
   name: CB2Consumer
-  chunksize: 500
+  chunksize: 1000
 
 data_sources:
   - name: 'CB2_5tzy'
     metadata: 'raw data from cb2 dataset'
     sep: '\t'
-    src: "../data/cb2/test_data/CB2_5tzy_all_action.csv"
-    length: 500
-    old_length: 98799
+    src: "../data/cb2/raw/CB2_5tzy_all_action.csv"
+    old_length: 500
+    length: 98799
 
   - name: 'CB2_6kpc'
     metadata:  'raw data from cb2 dataset'
     sep: '\t'
-    src: "../data/cb2/test_data/CB2_6kpc_all_action.csv"
-    length: 1500
-    old_length: 91064
+    src: "../data/cb2/raw/CB2_6kpc_all_action.csv"
+    old_length: 1500
+    length: 91064
 
   - name: 'CB2_6kpf'
     metadata:  'raw data from cb2 dataset'
     sep: '\t'
-    src: "../data/cb2/test_data/CB2_6kpf_all_action.csv"
-    length: 1000
-    old_length: 87141
+    src: "../data/cb2/raw/CB2_6kpf_all_action.csv"
+    old_length: 1000
+    length: 87141
 
 transforms:
 
@@ -79,7 +79,6 @@ transforms:
   transform_gate:
     eligible_for_processing:
       - concat-data
-      - CB2_6kpc
 
   change_nans:
     ignore_gate: false
@@ -88,14 +87,14 @@ transforms:
   save_locally:
     dir_location: "../../data/cb2/processed"
     dir_name: "big_cb2"
-    processes: 6
+    processes: 7
+    chunksize: 428
     partition_on_columns:
       - CB2_CAMP
       - CB2_beta_Arrestin
 
 
   terminate:
-    sync_headers: true
     clean_up:
       - concat-data
 

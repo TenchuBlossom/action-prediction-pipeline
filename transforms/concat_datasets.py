@@ -10,6 +10,7 @@ class Transform:
 
     def __init__(self, config):
         self.config = config
+
         self.dummy_exhausted_datasets = config.get('dummy_exhausted_datasets', True)
         self.sync_process = config.get('sync_process', True)
 
