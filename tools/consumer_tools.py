@@ -2,7 +2,9 @@ import tools.file_system as fs
 from tqdm import tqdm
 from tools.constants import Constants
 import ray
-from collections import OrderedDict, Callable
+from collections import OrderedDict
+from collections.abc import MutableMapping
+from mergedeep import merge
 cs = Constants()
 
 
@@ -37,9 +39,9 @@ def reset_datasets(datasets: dict):
     return datasets
 
 
-def transform_gate(datasets: dict, ignore_gate=False, dummy_exhausted_datasets=False):
+def transform_gate(datasets: MutableMapping, ignore_gate=False, dummy_exhausted_datasets=False):
 
-    if ignore_gate: return datasets.items()
+    if ignore_gate: return datasets
 
     gated_datasets = OrderedDict()
 
@@ -84,7 +86,18 @@ def get_transform_params(transform):
     elif transform.config.get('ignore_gate', None) is not None:
         ignore_gate = transform.config['ignore_gate']
 
+    if fs.get_class_filename(transform) == 'terminate':
+        ignore_gate = True
+
     return dummy_exhausted_datasets, sync_process, ignore_gate
+
+
+def state_manager(previous_state: dict, incoming_state: dict, transform):
+
+    if fs.get_class_filename(transform) == 'terminate': return incoming_state
+
+    new_state = merge({}, previous_state, incoming_state)
+    return new_state
 
 
 

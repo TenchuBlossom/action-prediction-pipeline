@@ -4,6 +4,8 @@ import tools.py_tools as pyt
 from custom_types.Data import Dataset
 from tqdm import tqdm
 from collections import OrderedDict
+import tools.ray_tools as rt
+from mergedeep import merge
 import ray
 import use_context
 
@@ -32,7 +34,7 @@ class Consumer:
             metadata = data_src['metadata']
             dataset_name = name
             length = data_src.get('length', None)
-            resources = data_src.get('resources', {'num_cpus': 1})
+            resources = rt.init_dataset_resources(data_src, ['resources'])
 
             if data_src.get('length', None) == 'compute':
                 with use_context.performance_profile("compute-csv-length", "batch"):
@@ -42,6 +44,7 @@ class Consumer:
             datasets[dataset_name] = Dataset.\
                 options(name=dataset_name, **resources).\
                 remote(**{
+                    'name': dataset_name,
                     'batch_loader_config': {
                         'filepath_or_buffer': src,
                         'sep': sep,
@@ -60,11 +63,12 @@ class Consumer:
         with use_context.performance_profile("read-data", "batch"):
 
             # set processes to work async, block until all processes are done or through error if timeout
-            worker_ids = [dataset.read_data.remote() for _, dataset in ct.transform_gate(self.datasets).items()]
-            ray.wait(worker_ids, num_returns=len(self.datasets), timeout=60.0)
+            datasets = ct.transform_gate(self.datasets)
+            worker_ids = [dataset.read_data.remote() for _, dataset in datasets.items()]
+            ray.wait(worker_ids, num_returns=len(worker_ids), timeout=60.0)
             total_chunks = 0
 
-            for _, dataset in self.datasets.items():
+            for _, dataset in datasets.items():
                 state = ray.get(dataset.get_state.remote(mode='just_metadata'))
                 total_chunks += state.chunk_length
 
@@ -84,24 +88,33 @@ class Consumer:
 
                 dummy_exhausted_datasets, sync_process, ignore_gate = ct.get_transform_params(transform)
 
-                if fs.get_class_filename(transform) == 'save_locally':
-                    a = 0
-
                 # TODO Check that dummy-exhausted works when one of the datasets runs out
                 datasets = ct.transform_gate(self.datasets, ignore_gate, dummy_exhausted_datasets)
 
                 if sync_process:
-                    self.datasets = transform(datasets)
-                    continue
+                    datasets = transform(datasets)
+                    self.datasets = ct.state_manager(
+                        previous_state=self.datasets,
+                        incoming_state=datasets,
+                        transform=transform
+                    )
 
-                worker_ids = [dataset.transform.remote(transform) for _, dataset in datasets.items()]
-                ray.wait(worker_ids, num_returns=len(datasets), timeout=60.0)
+                else:
+                    worker_ids = [dataset.transform.remote(transform) for _, dataset in datasets.items()]
+                    ray.wait(worker_ids, num_returns=len(datasets), timeout=60.0)
+
                 for _, dataset in datasets.items():
                     state = ray.get(dataset.get_state.remote())
-                    break
 
     def processes_completed(self):
         return self.completed_processes == self.total_processes
+
+    def terminate(self):
+        for transform in self.transform_chain:
+            try:
+                transform.spin_down()
+            except AttributeError:
+                continue
 
 
 if __name__ == '__main__':

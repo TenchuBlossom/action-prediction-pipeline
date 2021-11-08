@@ -1,0 +1,57 @@
+{
+    "CB2Consumer.py": {
+        "read-data": {
+            "batch_call_0": 1.7343292236328125,
+            "batch_call_1": 2.411529779434204,
+            "batch_call_2": 2.0614874362945557,
+            "batch_call_3": 0.008944988250732422
+        }
+    },
+    "transforms": {
+        "clean_features": {
+            "batch_call_0": 1.3683412075042725,
+            "batch_call_1": 1.056199312210083,
+            "batch_call_2": 0.4807138442993164
+        },
+        "remove_features": {
+            "batch_call_0": 0.8447442054748535,
+            "batch_call_1": 0.5375394821166992,
+            "batch_call_2": 0.35804295539855957
+        },
+        "clean_labels": {
+            "batch_call_0": 0.5744616985321045,
+            "batch_call_1": 0.35706520080566406,
+            "batch_call_2": 0.2014627456665039
+        },
+        "convert_dtypes": {
+            "batch_call_0": 1.4411489963531494,
+            "batch_call_1": 1.0920798778533936,
+            "batch_call_2": 0.9354979991912842
+        },
+        "concat_datasets": {
+            "batch_call_0": 2.328193187713623,
+            "batch_call_1": 1.9917075634002686,
+            "batch_call_2": 1.7104599475860596
+        },
+        "transform_gate": {
+            "batch_call_0": 0.7769229412078857,
+            "batch_call_1": 0.7001283168792725,
+            "batch_call_2": 0.5066795349121094
+        },
+        "change_nans": {
+            "batch_call_0": 0.17749524116516113,
+            "batch_call_1": 0.3759634494781494,
+            "batch_call_2": 0.532576322555542
+        },
+        "save_locally": {
+            "batch_call_0": 0.4570329189300537,
+            "batch_call_1": 0.40891075134277344,
+            "batch_call_2": 0.4188807010650635
+        },
+        "terminate": {
+            "batch_call_0": 0.025930404663085938,
+            "batch_call_1": 0.02094101905822754,
+            "batch_call_2": 0.0199129581451416
+        }
+    }
+}

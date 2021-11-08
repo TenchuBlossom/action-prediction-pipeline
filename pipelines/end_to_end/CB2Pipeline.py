@@ -35,6 +35,7 @@ class CB2Pipeline:
                 self.consumer.transform()
                 pbar.update(no_of_samples)
 
+        self.consumer.terminate()
         use_context.performance_profile.close()
 
     def execute_downstream(self):
@@ -48,7 +49,7 @@ class CB2Pipeline:
 
 if __name__ == "__main__":
     freeze_support()
-    ray.init()
+    ray.init(log_to_driver=False)
     global_res = ray.available_resources()
     pipe = CB2Pipeline('../../configs/cb2/pipeline.config.yaml')
     pipe.execute_clean()
