@@ -25,7 +25,7 @@ class Transform:
             reset_ids.append(dataset.reset.remote())
             out_datasets[dataset_name] = dataset
 
-        ray.wait(terminate_ids, num_returns=len(terminate_ids), timeout=60.0)
+        if len(terminate_ids) > 0: ray.wait(terminate_ids, num_returns=len(terminate_ids), timeout=60.0)
         ray.wait(reset_ids, num_returns=len(reset_ids), timeout=60.0)
 
         return out_datasets

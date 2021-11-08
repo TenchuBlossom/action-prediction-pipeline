@@ -86,17 +86,6 @@ class Dataset:
         self.eligible_for_transformation = select(state.eligible_for_transformation, self.eligible_for_transformation)
         self.batch_loader_exhausted = select(state.batch_loader_exhausted, self.batch_loader_exhausted)
 
-    def merge_actor_data(self, actors: list, name=None):
-        states = ray.get([actor.get_state.remote(mode='just_data') for actor in actors])
-        data_to_concat = [state.data for state in states]
-        new_data = pd.concat(data_to_concat)
-        new_state = State(
-            name=name,
-            data=new_data,
-            chunk_length=len(new_data),
-        )
-        self.update_state(new_state)
-
     def get_state(self, mode='all'):
 
         if mode == 'all':

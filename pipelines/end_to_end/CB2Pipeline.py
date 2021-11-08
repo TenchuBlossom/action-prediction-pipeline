@@ -35,6 +35,7 @@ class CB2Pipeline:
                 self.consumer.transform()
                 pbar.update(no_of_samples)
 
+        self.consumer.terminate()
         use_context.performance_profile.close()
 
     def execute_downstream(self):

@@ -96,7 +96,7 @@ transforms:
 
   terminate:
     clean_up:
-      - concat-data
+
 
 
 provider:

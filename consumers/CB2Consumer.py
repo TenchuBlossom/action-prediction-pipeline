@@ -109,6 +109,13 @@ class Consumer:
     def processes_completed(self):
         return self.completed_processes == self.total_processes
 
+    def terminate(self):
+        for transform in self.transform_chain:
+            try:
+                transform.spin_down()
+            except AttributeError:
+                continue
+
 
 if __name__ == '__main__':
     pass
