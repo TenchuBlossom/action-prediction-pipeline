@@ -52,5 +52,5 @@ if __name__ == "__main__":
     ray.init(log_to_driver=False)
     global_res = ray.available_resources()
     pipe = CB2Pipeline('../../configs/cb2/pipeline.config.yaml')
-    pipe.execute_clean()
+    pipe.execute_downstream()
     a = 0

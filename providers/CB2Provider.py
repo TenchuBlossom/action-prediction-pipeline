@@ -30,7 +30,10 @@ class Provider:
         shuffle = self.config['shuffle']
         stratify = self.config['stratify']
         random_seed = self.config.get('random_seed', None)
+        to_numpy = self.config.get('to_numpy', True)
         dtype = pyt.get_dtype_instance(self.config.get('dtype', None))
+        processes = self.config.get('processes', 1)
+        chunksize = self.config.get('chunksize', None)
 
         # TODO Load in data
         with use_context.performance_profile("virtual_db"):
@@ -70,11 +73,13 @@ class Provider:
             x_test = test.drop(y_names, axis=1)
             y_test = test[y_target]
 
-        x_train = x_train.to_numpy()
-        x_test = x_test.to_numpy()
-        y_train = y_train.to_numpy().flatten()
-        y_test = y_test.to_numpy().flatten()
-        features = features.to_numpy()
+        if to_numpy:
+            x_train = x_train.to_numpy()
+            x_test = x_test.to_numpy()
+            y_train = y_train.to_numpy().flatten()
+            y_test = y_test.to_numpy().flatten()
+            features = features.to_numpy()
+
         return x_train, x_test, y_train, y_test, features
 
 
