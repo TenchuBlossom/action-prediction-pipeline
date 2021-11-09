@@ -1,16 +1,8 @@
 import collections.abc
 import random
 import pandas as pd
-import json
-import os
-import tools.file_system as fs
-from mergedeep import merge, Strategy
-from tqdm import tqdm
-from alive_progress import alive_bar
 import math
-import numpy as np
 from copy import deepcopy
-import itertools
 
 
 def preview_data(database: collections.abc.MutableMapping, preview_frac: float, random_seed: int):
@@ -45,102 +37,4 @@ def to_virtual_dataframe(database: collections.abc.MutableMapping, name=None, pr
     df = pd.DataFrame(rows, columns=['index', 'partition', name])
     return df
 
-
-class Paths:
-    def __init__(self, root, row, headers, database):
-        self.root = root
-        self.row = row
-        self.headers = headers
-        self.database = database
-
-
-class Partition:
-    def __init__(self, paths, name=None):
-        self.name = name
-        self.paths = Paths(**paths)
-        self.database = fs.load_json(self.paths.database)
-        self.headers = pd.read_csv(self.paths.headers).values[:, 0]
-
-
-class VirtualDb:
-
-    def __init__(self, pathname: str):
-        self.pathname = pathname
-        self.partitions = dict()
-
-    def anchor(self, check_equality=True):
-        dir_check = lambda file: file.endswith('partition')
-        partition_names = []
-        for partition_name, partition_path in zip(*fs.get_dirs(self.pathname, custom_check=dir_check)):
-            partition_names.append(partition_name)
-            row_path = fs.get_dirs(partition_path, custom_check=lambda file: file == 'rows')[1][0]
-            header_path, virtual_db_path = fs.find_files(partition_path, ['headers.csv', 'virtual_db.json'])[1]
-
-            paths = dict(root=partition_path, row=row_path, headers=header_path, database=virtual_db_path)
-            self.partitions[partition_name] = Partition(paths, partition_name)
-
-        if not check_equality: return
-
-        for pair in itertools.combinations(partition_names, 2):
-            is_equal = all(self.partitions[pair[0]].headers == self.partitions[pair[1]].headers)
-            if is_equal is False:
-                raise ValueError(f'Provider Anchor Partition Header equality Error: Partitions {pair[0]} and {pair[1]} have different '
-                                 f'headers. All partitions should have the same headers because they should belong to the same dataset')
-
-    def view(self, partitions=None, view_all=False, merge_partitions=False):
-        if partitions is None: partitions = []
-        if view_all or len(partitions) == 0:
-            partitions = self.partitions.keys()
-
-        out_db = [self.partitions[name].database for name in partitions]
-
-        if merge_partitions:
-            out_db = merge({}, *out_db, strategy=Strategy.ADDITIVE)
-
-        # Calculate the ratios of each unique value in db fields
-        for field, content in out_db.items():
-            ratios = [len(value['index']) for _, value in content.items()]
-            r_sum = sum(ratios)
-
-            for length, (val_name, value) in zip(ratios, content.items()):
-                value['length'] = length
-                value['ratio'] = round(length / r_sum, 2)
-
-            round_check = sum([value['ratio'] for _, value in content.items()])
-            if round_check != 1.0:
-                raise ValueError('Parition Rounding Error: stratifying ratios of a partition column summed to value'
-                                 'not equal to 1.0')
-
-        return out_db
-
-    def compute(self, virtual_dataframe: pd.DataFrame, dtype, ):
-
-        if virtual_dataframe.shape[1] != 2:
-            raise ValueError(f'Error Virtual Dataframe Shape: received shape {virtual_dataframe.shape}.'
-                             f'A virtual dataframe must be an nx2 shape dataframe where the columns'
-                             f'correspond to row indexes and partition ids ')
-
-        # indexes: list, partitions: list
-        rows = []
-        cols = None
-
-        with tqdm(total=len(virtual_dataframe), desc=f"Computing data instances: ") as pbar:
-            for i in range(len(virtual_dataframe)):
-                v_row = virtual_dataframe.iloc[i]
-                index, partition_name = v_row.values
-                partition = self.partitions[partition_name]
-                row_file = os.path.join(partition.paths.row, f'{index}_row.npz')
-                row_data = np.load(row_file)['arr_0']
-
-                if i == 0:
-                    cols = partition.headers
-
-                rows.append(row_data)
-                pbar.update()
-
-        with alive_bar(title=f'Converting to dataframe') as bar:
-            df = pd.DataFrame(rows, columns=cols, dtype=dtype)
-            bar()
-
-        return df
 

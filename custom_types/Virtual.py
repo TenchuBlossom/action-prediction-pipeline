@@ -6,6 +6,60 @@ from tqdm import tqdm
 from alive_progress import alive_bar
 import numpy as np
 import itertools
+from ray.util.multiprocessing import Pool
+import ray
+
+
+def __sync_compute__(virtual_matrix, partitions):
+    rows = []
+    cols = None
+    with tqdm(total=len(virtual_matrix), desc=f"Computing data instances [Sync]: ") as pbar:
+        for i in range(len(virtual_matrix)):
+            v_row = virtual_matrix[i]
+            index, partition_name = v_row
+            partition = partitions[partition_name]
+            row_file = os.path.join(partition.paths.row, f'{index}_row.npz')
+            row_data = np.load(row_file)['arr_0']
+
+            if i == 0:
+                cols = partition.headers
+
+            rows.append(row_data)
+            pbar.update()
+
+    return rows, cols
+
+
+def __distributed_compute__(virtual_matrix, partitions, processes=1, chunksize=None):
+    args = []
+    rows = []
+    cols = None
+    for i in range(len(virtual_matrix)):
+        v_row = virtual_matrix[i]
+        index, partition_name = v_row
+        partition = partitions[partition_name]
+        row_file = os.path.join(partition.paths.row, f'{index}_row.npz')
+
+        if i == 0:
+            cols = partition.headers
+
+        args.append(row_file)
+
+    with tqdm(total=len(virtual_matrix), desc=f"Computing data instances [Distributed]: ") as pbar:
+        pool = Pool(processes=processes)
+        if chunksize is None:
+            for result in pool.map(lambda file: np.load(file)['arr_0'], args):
+                rows.append(result)
+                pbar.update()
+
+        else:
+            for result in pool.imap(lambda file: np.load(file)['arr_0'], args, chunksize=chunksize):
+                rows.append(result)
+                pbar.update()
+
+        pool.close()
+
+    return rows, cols
 
 
 class Paths:
@@ -82,23 +136,14 @@ class VirtualDb:
                              f'A virtual dataframe must be an nx2 shape dataframe where the columns'
                              f'correspond to row indexes and partition ids ')
 
+        virtual_matrix = virtual_dataframe.to_numpy()
+
         # indexes: list, partitions: list
-        rows = []
-        cols = None
+        if processes > 1:
+            rows, cols = __distributed_compute__(virtual_matrix, self.partitions, processes, chunksize)
 
-        with tqdm(total=len(virtual_dataframe), desc=f"Computing data instances: ") as pbar:
-            for i in range(len(virtual_dataframe)):
-                v_row = virtual_dataframe.iloc[i]
-                index, partition_name = v_row.values
-                partition = self.partitions[partition_name]
-                row_file = os.path.join(partition.paths.row, f'{index}_row.npz')
-                row_data = np.load(row_file)['arr_0']
-
-                if i == 0:
-                    cols = partition.headers
-
-                rows.append(row_data)
-                pbar.update()
+        else:
+            rows, cols = __sync_compute__(virtual_matrix, self.partitions)
 
         with alive_bar(title=f'Converting to dataframe') as bar:
             df = pd.DataFrame(rows, columns=cols, dtype=dtype)

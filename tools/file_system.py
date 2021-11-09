@@ -133,14 +133,14 @@ def get_class_filename(class_object):
 
 def compute_csv_len(pathname: str, file_name=None):
     file = open(pathname, 'r')
-    sum = 1
+    sum_val = 0
     with alive_bar(title=f'Computing size {file_name}') as bar:
         for _ in file:
-            sum += 1
+            sum_val += 1
             bar()
 
     file.close()
-    return sum
+    return sum_val
 
 
 def get_stack_info(frame_depth=1):

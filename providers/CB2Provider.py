@@ -1,8 +1,10 @@
 import numpy as np
 import tools.provider_tools as pt
+from custom_types.Virtual import VirtualDb
 import tools.py_tools as pyt
 from sklearn.model_selection import train_test_split
 import use_context
+from ray.util.multiprocessing import Pool
 
 
 class Provider:
@@ -37,7 +39,7 @@ class Provider:
 
         # TODO Load in data
         with use_context.performance_profile("virtual_db"):
-            virtual_db = pt.VirtualDb(dataset_dir)
+            virtual_db = VirtualDb(dataset_dir)
             virtual_db.anchor()
             database = virtual_db.view(view_all=True, merge_partitions=True)
             virtual_dataset = pt.to_virtual_dataframe(database[y_target], y_target, preview_frac, random_seed)
@@ -64,12 +66,12 @@ class Provider:
 
         features = train.columns
         with use_context.performance_profile("compute_x_train"):
-            train = virtual_db.compute(train, dtype=dtype, middleware=[self.__check_header_equality__])
+            train = virtual_db.compute(train, dtype=dtype, processes=processes, chunksize=chunksize)
             x_train = train.drop(y_names, axis=1)
             y_train = train[y_target]
 
         with use_context.performance_profile("compute_x_test"):
-            test = virtual_db.compute(test, dtype=dtype, middleware=[self.__check_header_equality__])
+            test = virtual_db.compute(test, dtype=dtype, processes=processes, chunksize=chunksize)
             x_test = test.drop(y_names, axis=1)
             y_test = test[y_target]
 
