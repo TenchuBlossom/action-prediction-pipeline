@@ -21,10 +21,9 @@ class Consumer:
         self.completed_processes = 0
         self.total_length = 0
         self.chunksize = pyt.get(self.config, ['consumer', 'chunksize'], 250)
+        self.processes_active = False
 
-        self.__compile_datasets__()
-
-    def __compile_datasets__(self):
+    def spin_up_processes(self):
 
         datasets = OrderedDict()
         for data_src in self.config['data_sources']:
@@ -57,8 +56,13 @@ class Consumer:
 
         self.total_processes = len(datasets)
         self.datasets = datasets
+        self.processes_active = True
 
     def consume(self):
+
+        if self.processes_active is False:
+            raise ValueError(f'Consumer Error: Cannot run method consume() until consumer.spin_up_processes() has been called first')
+
         # this will
         with use_context.performance_profile("read-data", "batch"):
 
@@ -109,7 +113,7 @@ class Consumer:
     def processes_completed(self):
         return self.completed_processes == self.total_processes
 
-    def terminate(self):
+    def spin_down_processes(self):
         for transform in self.transform_chain:
             try:
                 transform.spin_down()

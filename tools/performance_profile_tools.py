@@ -4,6 +4,8 @@ import os
 import tools.py_tools as pyt
 from contextlib import contextmanager
 from collections import OrderedDict
+from tqdm import tqdm
+from alive_progress import alive_bar
 
 
 class PerformanceProfile:
@@ -63,11 +65,15 @@ class PerformanceProfile:
 
     def close(self):
         # Reformat for better viewing in json format
-        for block_name, block in self.profile.items():
-            for call_name, call_block in block.items():
-                self.profile[block_name][call_name] = call_block['calls']
+        with tqdm(len(self.profile.items()), desc='Preparing to close performance profiler') as pbar:
+            for block_name, block in self.profile.items():
+                for call_name, call_block in block.items():
+                    self.profile[block_name][call_name] = call_block['calls']
+                pbar.update()
 
-        fs.save_json(self.profile_path, self.profile, optimise=False)
+        with alive_bar(title=f'Saving performance profiler to {self.profile} ') as bar:  # declare your expected total
+            fs.save_json(self.profile_path, self.profile, optimise=False)
+            bar()
 
 
 
