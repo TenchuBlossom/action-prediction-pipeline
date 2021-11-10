@@ -81,7 +81,7 @@ class Consumer:
 
             return total_chunks
 
-    def transform(self, show_progress=False):
+    def transform(self, show_progress=False, debug_states=False):
         iterable = self.transform_chain
         if show_progress:
             iterable = tqdm(self.transform_chain, desc="Applying Transforms", colour="WHITE")
@@ -107,8 +107,8 @@ class Consumer:
                     worker_ids = [dataset.transform.remote(transform) for _, dataset in datasets.items()]
                     ray.wait(worker_ids, num_returns=len(datasets), timeout=60.0)
 
-                for _, dataset in datasets.items():
-                    state = ray.get(dataset.get_state.remote())
+                if debug_states:
+                    ct.debug_actors_states(datasets)
 
     def processes_completed(self):
         return self.completed_processes == self.total_processes

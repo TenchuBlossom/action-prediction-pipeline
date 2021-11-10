@@ -30,7 +30,7 @@ def __sync_compute__(virtual_matrix, partitions):
     return rows, cols
 
 
-def __distributed_compute__(virtual_matrix, partitions, processes=1, chunksize=None):
+def __distributed_compute__(virtual_matrix, partitions, processes=1):
     args = []
     rows = []
     cols = None
@@ -47,15 +47,9 @@ def __distributed_compute__(virtual_matrix, partitions, processes=1, chunksize=N
 
     with tqdm(total=len(virtual_matrix), desc=f"Computing data instances [Distributed]: ") as pbar:
         pool = Pool(processes=processes)
-        if chunksize is None:
-            for result in pool.map(lambda file: np.load(file)['arr_0'], args):
-                rows.append(result)
-                pbar.update()
-
-        else:
-            for result in pool.imap(lambda file: np.load(file)['arr_0'], args, chunksize=chunksize):
-                rows.append(result)
-                pbar.update()
+        for result in pool.map(lambda file: np.load(file)['arr_0'], args):
+            rows.append(result)
+            pbar.update()
 
         pool.close()
 
@@ -88,6 +82,8 @@ class VirtualDb:
         dir_check = lambda file: file.endswith('partition')
         partition_names = []
         for partition_name, partition_path in zip(*fs.get_dirs(self.pathname, custom_check=dir_check)):
+            if partition_name == '98_partition':
+                a = 0
             partition_names.append(partition_name)
             row_path = fs.get_dirs(partition_path, custom_check=lambda file: file == 'rows')[1][0]
             header_path, virtual_db_path = fs.find_files(partition_path, ['headers.csv', 'virtual_db.json'])[1]
@@ -129,7 +125,7 @@ class VirtualDb:
 
         return out_db
 
-    def compute(self, virtual_dataframe: pd.DataFrame, dtype, processes: int, chunksize: int):
+    def compute(self, virtual_dataframe: pd.DataFrame, dtype, processes: int):
 
         if virtual_dataframe.shape[1] != 2:
             raise ValueError(f'Error Virtual Dataframe Shape: received shape {virtual_dataframe.shape}.'
@@ -140,7 +136,7 @@ class VirtualDb:
 
         # indexes: list, partitions: list
         if processes > 1:
-            rows, cols = __distributed_compute__(virtual_matrix, self.partitions, processes, chunksize)
+            rows, cols = __distributed_compute__(virtual_matrix, self.partitions, processes)
 
         else:
             rows, cols = __sync_compute__(virtual_matrix, self.partitions)

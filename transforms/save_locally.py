@@ -10,8 +10,11 @@ from ray.util.multiprocessing import Pool
 from numpy import savez_compressed
 import time
 
+# TODO Bug here Partition 98 of big_cb2 says there us row at 348 but when you check the partition
+# it is not there. Either the save locally is doing something wrong or the virtual db is reading it wrong.
 
-def __to_csv__(args: dict):
+
+def __to_npz__(args: dict):
     row = args['data']
     pathname = args['pathname']
     savez_compressed(pathname, row)
@@ -23,10 +26,8 @@ class Transform:
     def __init__(self, config):
         self.config = config
         self.processes = config.get('processes', 1)
-        self.chunksize = config.get('chunksize', None)
         self.pool = Pool(processes=self.processes)
 
-        self.index = 0
         self.partition = 0
 
         dir_location = pyt.get(config, ['dir_location'])
@@ -37,30 +38,36 @@ class Transform:
         # Processing Flags
         self.sync_process = True
 
-    def init_distributed_saving(self, row, row_pathname: str, process_args: list, virtual_db: dict, partition_cols: list):
-        # Create args for distributed saving
+    def init_distributed_saving(self, state, row_pathname: str, partition_cols: list):
 
-        process_args.append({
-            'data': row,
-            'pathname': os.path.join(row_pathname, f'{self.index}_row.npz'),
-        })
+        virtual_db = OrderedDict()
+        process_args = []
 
-        # Populate the virtual database
-        for partition_col in partition_cols:
-            col_name = partition_col['col_name']
-            index = partition_col['index']
-            val = row[index]
-            key_exist = virtual_db.get(col_name, None)
-            if key_exist is None: virtual_db[col_name] = dict()
+        data = state.data.to_numpy()
+        for i in range(len(data)):
+            # Create args for distributed saving
+            row = data[i, :]
+            process_args.append({
+                'data': row,
+                'pathname': os.path.join(row_pathname, f'{i}_row.npz'),
+            })
 
-            key_exist = virtual_db[col_name].get(val, None)
-            if key_exist is None: virtual_db[col_name][val] = dict(index=[], partition=[], byte_size=[])
+            # Populate the virtual database
+            for partition_col in partition_cols:
+                col_name = partition_col['col_name']
+                partition_index = partition_col['index']
+                val = row[partition_index]
+                key_exist = virtual_db.get(col_name, None)
+                if key_exist is None: virtual_db[col_name] = dict()
 
-            virtual_db[col_name][val]['index'].append(self.index)
-            virtual_db[col_name][val]['partition'].append(f'{self.partition}_partition')
-            virtual_db[col_name][val]['byte_size'].append(row.nbytes)
+                key_exist = virtual_db[col_name].get(val, None)
+                if key_exist is None: virtual_db[col_name][val] = dict(index=[], partition=[], byte_size=[])
 
-        self.index += 1
+                virtual_db[col_name][val]['index'].append(i)
+                virtual_db[col_name][val]['partition'].append(f'{self.partition}_partition')
+                virtual_db[col_name][val]['byte_size'].append(row.nbytes)
+
+        return process_args, virtual_db
 
     def __call__(self, datasets: dict) -> dict:
 
@@ -73,28 +80,18 @@ class Transform:
             root_pathname = fs.make_dir(os.path.join(self.dir_pathname, state.name))
             partition_pathname = fs.make_dir(os.path.join(root_pathname, f'{self.partition}_partition'))
             row_pathname = fs.make_dir(os.path.join(partition_pathname, 'rows'))
-            virtual_db = OrderedDict()
-            process_args = []
 
             partition_cols = []
             for col_name in pyt.get(self.config, ['partition_on_columns']):
                 partition_cols.append({'col_name': col_name, 'index': state.headers.get_loc(col_name)})
 
-            data = state.data.to_numpy()
-            [self.init_distributed_saving(data[i, :], row_pathname, process_args, virtual_db, partition_cols) for i in range(len(data))]
+            process_args, virtual_db = self.init_distributed_saving(state, row_pathname, partition_cols)
 
-            if self.chunksize is None:
-                self.pool.map(__to_csv__, process_args)
-                pass
-            else:
-                self.pool.imap(__to_csv__, process_args, chunksize=self.chunksize)
-                pass
+            self.pool.map(__to_npz__, process_args)
 
             # TODO save virtual database as json to partition & save header
             state.headers.to_series().to_csv(os.path.join(partition_pathname, 'headers.csv'), index=False, sep='\t')
             fs.save_json(os.path.join(partition_pathname, 'virtual_db.json'), virtual_db)
-
-            self.index = 0
 
         self.partition += 1
         return datasets
