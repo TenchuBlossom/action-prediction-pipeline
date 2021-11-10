@@ -8,6 +8,11 @@ from mergedeep import merge
 cs = Constants()
 
 
+def debug_actors_states(datasets: dict):
+    for _, dataset in datasets.items():
+        state = ray.get(dataset.get_state.remote())
+
+
 def compile_transforms(config: dict) -> list:
 
     requested_transforms = config.get(cs.transforms, None)

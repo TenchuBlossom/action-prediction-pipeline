@@ -6,6 +6,9 @@ from sklearn.model_selection import train_test_split
 import use_context
 from ray.util.multiprocessing import Pool
 
+# TODO Compute conversion to dataframe in compute function is very slow. do final operations using numpy instead only convert to
+# to dataframe at the end if the user asks for it.
+
 
 class Provider:
 
@@ -35,7 +38,6 @@ class Provider:
         to_numpy = self.config.get('to_numpy', True)
         dtype = pyt.get_dtype_instance(self.config.get('dtype', None))
         processes = self.config.get('processes', 1)
-        chunksize = self.config.get('chunksize', None)
 
         # TODO Load in data
         with use_context.performance_profile("virtual_db"):
@@ -66,12 +68,12 @@ class Provider:
 
         features = train.columns
         with use_context.performance_profile("compute_x_train"):
-            train = virtual_db.compute(train, dtype=dtype, processes=processes, chunksize=chunksize)
+            train = virtual_db.compute(train, dtype=dtype, processes=processes)
             x_train = train.drop(y_names, axis=1)
             y_train = train[y_target]
 
         with use_context.performance_profile("compute_x_test"):
-            test = virtual_db.compute(test, dtype=dtype, processes=processes, chunksize=chunksize)
+            test = virtual_db.compute(test, dtype=dtype, processes=processes)
             x_test = test.drop(y_names, axis=1)
             y_test = test[y_target]
 
