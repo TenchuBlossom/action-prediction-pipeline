@@ -106,7 +106,7 @@ provider:
   dataset_dir: '../../data/cb2/processed/big_cb2/concat-data'
   processes: 5
   dtype: float
-  preview_frac: 0.05
+  preview_frac: 0.01
   test_size: 0.05
   classes:
     - 0
