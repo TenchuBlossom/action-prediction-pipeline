@@ -57,5 +57,5 @@ class Constants:
         self.trainables_uri = 'trainables.'
         self.consumers_uri = 'consumers.'
         self.model_selection_uri = 'sklearn.model_selection.'
-        self.tickIcon = '\u2713'
+        self.tickIcon = '=>'
 

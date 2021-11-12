@@ -141,7 +141,7 @@ class VirtualDb:
         else:
             rows, cols = __sync_compute__(virtual_matrix, self.partitions)
 
-        with alive_bar(title=f'Converting to dataframe') as bar:
+        with alive_bar(title=f'Converting to dataframe', bar='classic') as bar:
             df = pd.DataFrame(rows, columns=cols, dtype=dtype)
             bar()
 
