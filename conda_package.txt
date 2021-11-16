@@ -1,5 +1,9 @@
+ conda create --prefix envs/ml-env
+ conda activate /rds/projects/s/stylesib-drug-design-mrc/nottingham-projects/action-prediction-pipeline/envs/ml-env
+
+
 conda install --yes numpy
-pip install --yes ray
+pip install ray
 conda install -c conda-forge --yes scikit-learn
 conda install --yes pandas
 conda install -c conda-forge --yes catboost

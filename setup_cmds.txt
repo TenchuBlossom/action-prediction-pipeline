@@ -1,1 +1,9 @@
 mkdir -p data/{uncompressed/{processed,raw/{beta1,beta2,cb2},testing/cb2},zips/cb2}
+
+# SBatch cmds
+
+squeue [job ref num] => show queue table
+scontrol show job [job ref num] => shows how many nodes, cpus and memory your program is actual using
+scancel [job ref num] => cancel a submitted job
+tail -f slurm-[job ref num].out => watch the file for updates dynamically see the terminal output
+

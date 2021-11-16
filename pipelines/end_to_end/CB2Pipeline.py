@@ -1,12 +1,10 @@
 import tools.file_system as fs
 import tools.pipeline_tools as pt
-import tools.py_tools as pyt
-from multiprocessing import freeze_support, cpu_count
+from multiprocessing import freeze_support
 from tools.performance_profile_tools import PerformanceProfile
 from tools.constants import Constants
 from tqdm import tqdm
 import ray
-import os
 import use_context
 cs = Constants()
 
@@ -56,6 +54,6 @@ if __name__ == "__main__":
     ray.init(log_to_driver=False, )
     global_res = ray.available_resources()
     pipe = CB2Pipeline('../../configs/cb2/pipeline.config.yaml')
-    pipe.execute_downstream()
+    pipe.execute_clean()
     ray.shutdown()
     a = 0
