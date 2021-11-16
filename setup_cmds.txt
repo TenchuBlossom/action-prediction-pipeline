@@ -7,3 +7,4 @@ scontrol show job [job ref num] => shows how many nodes, cpus and memory your pr
 scancel [job ref num] => cancel a submitted job
 tail -f slurm-[job ref num].out => watch the file for updates dynamically see the terminal output
 
+
