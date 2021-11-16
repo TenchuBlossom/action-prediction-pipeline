@@ -90,7 +90,7 @@ transforms:
   save_locally:
     dir_location: "../../data/uncompressed/processed"
     dir_name: "big_cb2"
-    processes: 4
+    processes: 13
     partition_on_columns:
       - CB2_CAMP
       - CB2_beta_Arrestin
