@@ -6,7 +6,7 @@ data_sources:
   - name: 'CB2_5tzy'
     metadata: 'raw data from cb2 dataset'
     sep: '\t'
-    src: "../data/cb2/raw/CB2_5tzy_all_action.csv"
+    src: "../../data/uncompressed/raw/cb2/CB2_5tzy_all_action.csv"
     length: 'compute'
     n_length: 500
     old_length: 98799
@@ -14,7 +14,7 @@ data_sources:
   - name: 'CB2_6kpc'
     metadata:  'raw data from cb2 dataset'
     sep: '\t'
-    src: "../data/cb2/raw/CB2_6kpc_all_action.csv"
+    src: "../../data/uncompressed/raw/cb2/CB2_6kpc_all_action.csv"
     length: 'compute'
     n_length: 1500
     old_length: 91064
@@ -22,7 +22,7 @@ data_sources:
   - name: 'CB2_6kpf'
     metadata:  'raw data from cb2 dataset'
     sep: '\t'
-    src: "../data/cb2/raw/CB2_6kpf_all_action.csv"
+    src: "../../data/uncompressed/raw/cb2/CB2_6kpf_all_action.csv"
     length: 'compute'
     n_length: 1000
     old_length: 87141
@@ -88,7 +88,7 @@ transforms:
     value: 0
 
   save_locally:
-    dir_location: "../../data/cb2/processed"
+    dir_location: "../../data/uncompressed/processed"
     dir_name: "big_cb2"
     processes: 4
     partition_on_columns:
@@ -103,7 +103,7 @@ transforms:
 
 provider:
   name: CB2Provider
-  dataset_dir: '../../data/cb2/processed/big_cb2/concat-data'
+  dataset_dir: '../../data/uncompressed/processed/big_cb2/concat_data'
   processes: 5
   dtype: float
   preview_frac: 0.01

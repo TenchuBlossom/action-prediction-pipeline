@@ -1,0 +1,1 @@
+mkdir -p data/{uncompressed/{processed,raw/{beta1,beta2,cb2},testing/cb2},zips/cb2}
