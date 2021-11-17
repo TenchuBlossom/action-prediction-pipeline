@@ -27,7 +27,17 @@ fi
 source ${VENV_PATH}/bin/activate
 
 # install python dependencies
-pip install -r venv-package.txt
+pip install pyyaml
+pip install pandas
+pip install scikit-learn
+pip install catboost
+pip install ray
+pip install numpy
+pip install matplotlib
+pip install alive-progress
+pip install tqdm
+pip install seaborn
+pip install mergedeep
 
 # Execute pipeline
 python -m pipelines.end_to_end.CB2Pipeline
