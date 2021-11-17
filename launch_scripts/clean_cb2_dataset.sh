@@ -9,7 +9,7 @@
 set -e
 module purge; module load bluebear
 
-module load Python/3.9.5-GCCcore-10.3.0-bare
+module load scikit-learn/0.24.2-foss-2021a
 
 export VENV_DIR="${HOME}/virtual-environments"
 export VENV_PATH="${VENV_DIR}/my-virtual-env-${BB_CPU}"
@@ -28,11 +28,8 @@ source ${VENV_PATH}/bin/activate
 
 # install python dependencies
 pip install pyyaml
-pip install pandas
-pip install scikit-learn
 pip install catboost
 pip install ray
-pip install numpy
 pip install matplotlib
 pip install alive-progress
 pip install tqdm
