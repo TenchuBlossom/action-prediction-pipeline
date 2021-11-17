@@ -1,0 +1,7 @@
+pipeline:
+  data_config: '../../configs/cb2_DT/data.config.yaml'
+  train_config:  '../../configs/cb2_DT/trainable.config.yaml'
+
+performance_profile:
+  name: 'multiprocess'
+  overwrite_profile: false

@@ -9,10 +9,25 @@
 set -e
 module purge; module load bluebear
 
-pwd
-#module --ignore-cache load Miniconda3/4.9.2
 module load Python/3.9.5-GCCcore-10.3.0-bare
 
-#conda activate envs/ml-env
+export VENV_DIR="${HOME}/virtual-environments"
+export VENV_PATH="${VENV_DIR}/my-virtual-env-${BB_CPU}"
 
+# Create a master venv directory if necessary
+mkdir -p "${VENV_DIR}"
+
+# Check if virtual environment exists and create it if not
+if [[ ! -d ${VENV_PATH} ]]; then
+    python3 -m venv --system-site-packages "${VENV_PATH}"
+fi
+
+# Activate the virtual environment
+# shellcheck disable=SC2086
+source ${VENV_PATH}/bin/activate
+
+# install python dependencies
+pip install -r venv-package.txt
+
+# Execute pipeline
 python -m pipelines.end_to_end.CB2Pipeline

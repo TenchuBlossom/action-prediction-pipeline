@@ -53,7 +53,7 @@ if __name__ == "__main__":
     freeze_support()
     ray.init(log_to_driver=False, )
     global_res = ray.available_resources()
-    pipe = CB2Pipeline('../../configs/cb2/pipeline.config.yaml')
+    pipe = CB2Pipeline('../../configs/cb2_DT/pipeline.config.yaml')
     pipe.execute_clean()
     ray.shutdown()
     a = 0

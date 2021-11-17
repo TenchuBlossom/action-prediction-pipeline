@@ -4,7 +4,7 @@ consumer:
 
 data_sources:
   - name: 'CB2_5tzy'
-    metadata: 'raw data from cb2 dataset'
+    metadata: 'raw data from cb2_DT dataset'
     sep: '\t'
     src: "../../data/uncompressed/raw/cb2/CB2_5tzy_all_action.csv"
     length: 'compute'
@@ -12,7 +12,7 @@ data_sources:
     old_length: 98799
 
   - name: 'CB2_6kpc'
-    metadata:  'raw data from cb2 dataset'
+    metadata:  'raw data from cb2_DT dataset'
     sep: '\t'
     src: "../../data/uncompressed/raw/cb2/CB2_6kpc_all_action.csv"
     length: 'compute'
@@ -20,7 +20,7 @@ data_sources:
     old_length: 91064
 
   - name: 'CB2_6kpf'
-    metadata:  'raw data from cb2 dataset'
+    metadata:  'raw data from cb2_DT dataset'
     sep: '\t'
     src: "../../data/uncompressed/raw/cb2/CB2_6kpf_all_action.csv"
     length: 'compute'
@@ -90,7 +90,7 @@ transforms:
   save_locally:
     dir_location: "../../data/uncompressed/processed"
     dir_name: "big_cb2"
-    processes: 13
+    processes: 3
     partition_on_columns:
       - CB2_CAMP
       - CB2_beta_Arrestin
