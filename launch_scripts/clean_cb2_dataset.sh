@@ -2,8 +2,7 @@
 
 #SBATCH --ntasks 20
 #SBATCH --nodes 1
-#SBATCH --time 25:0:0
-#SBATCH --qos castlespowergpu
+#SBATCH --time 25:0
 #SBATCH --mail-type ALL
 
 set -e
@@ -30,6 +29,7 @@ source ${VENV_PATH}/bin/activate
 pip install pyyaml
 pip install catboost
 pip install ray
+pip install hiredis
 pip install matplotlib
 pip install alive-progress
 pip install tqdm
