@@ -21,7 +21,7 @@ class Trainable:
         self.eval_diagnostics = None
 
     def train(self, x, y):
-        with alive_bar(title="Executing Training Procedure") as bar:
+        with alive_bar(title="Executing Training Procedure", bar='classic') as bar:
             self.train_results = self.validator(self.model, x, y)
 
     def evaluate(self, x, y):

@@ -1,15 +1,23 @@
-name: ml-env
-channels:
-  - conda-forge
-  - defaults
+env_name: ml-env
+env_location: /
+python_version: 3.9.1
+
+creation_cmds:
+  - conda create --prefix /tmp/test-env python=2.7
+
+
+setup_cmds:
+
+
 dependencies:
-  - pandas
-  - scikit-learn
-  - catboost
-  - matplotlib
-  - pyaml
-  - alive-progress
-  - tqdm
-  - seaborn
-  - mergedeep
-prefix: C:\Users\bxm604\.conda\envs\ml-env
+  - package_name: numpy
+    install_cmd: conda install numpy
+
+  - package_name: sklearn
+    install_cmd: conda install -c conda-forge scikit-learn
+
+  - package_name: pandas
+    install_cmd: conda install pandas
+
+  - package_name: catboost
+    install_cmd:

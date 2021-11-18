@@ -71,7 +71,7 @@ class PerformanceProfile:
                     self.profile[block_name][call_name] = call_block['calls']
                 pbar.update()
 
-        with alive_bar(title=f'Saving performance profiler to {self.profile} ') as bar:  # declare your expected total
+        with alive_bar(title=f'Saving performance profiler to {self.profile} ', bar='classic') as bar:  # declare your expected total
             fs.save_json(self.profile_path, self.profile, optimise=False)
             bar()
 
