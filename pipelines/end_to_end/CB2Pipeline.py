@@ -2,10 +2,13 @@ import tools.file_system as fs
 import tools.pipeline_tools as pt
 from multiprocessing import freeze_support
 from tools.performance_profile_tools import PerformanceProfile
+import tools.file_system as fs
 from tools.constants import Constants
+import tools.py_tools as pyt
 from tqdm import tqdm
 import ray
 import use_context
+import os
 cs = Constants()
 
 
@@ -23,7 +26,21 @@ class CB2Pipeline:
 
         use_context.performance_profile = PerformanceProfile(self.config['performance_profile'])
 
-    def execute_clean(self):
+        self.pipe_location = fs.make_dir_chain(
+            fs.path('../../resources'),
+            ['pipelines', pyt.get(self.config, ['pipeline', 'name'], 'pipeline')]
+        )
+
+    def execute_procedures(self, procedure):
+        procedure_list = pyt.get(self.config, ['procedures', procedure], [])
+
+        for proc_key in procedure_list:
+            procedure_method = getattr(self, proc_key)
+            procedure_method()
+
+        self.procedure_shutdown()
+
+    def procedure_preprocess(self):
 
         self.consumer.spin_up_processes()
         desc = f"CB2 Pipeline: Cleaning Batches of size {self.consumer.chunksize}"
@@ -40,20 +57,43 @@ class CB2Pipeline:
         self.consumer.spin_down_processes()
         use_context.performance_profile.close()
 
-    def execute_downstream(self):
+    def procedure_train(self):
         x_train, x_test, y_train, y_test, features = self.provider.provide()
 
         self.trainable.train(x_train, y_train)
         self.trainable.evaluate(x_test, y_test)
-        self.trainable.diagnose()
+
+    def procedure_fit(self):
+        x_all, _, y_all, _, features = self.provider.provide()
+        self.trainable.fit(x_all, y_all)
+
+    def procedure_diagnose(self):
+        self.trainable.diagnose(self.pipe_location)
+
+    def procedure_persist(self):
+
+        if pyt.get(self.config, ['save_options', 'save_trainable'], False):
+            self.trainable.persist(location=self.pipe_location)
+
+    def procedure_shutdown(self):
         use_context.performance_profile.close()
+
+
+def entry_point(config: str, procedure: str):
+    ray.init(log_to_driver=False)
+    pipe = CB2Pipeline(config)
+    pipe.execute_procedures(procedure)
+    # trainable = fs.load_class_instance(fs.path('../../resources/pipelines/CB2Pipeline.pipe'), uncompress=False)
+    # trainable.diagnose()
+    ray.shutdown()
+
+
+def parse_arguments():
+    # arg parser goes here
+    pass
 
 
 if __name__ == "__main__":
     freeze_support()
-    ray.init(log_to_driver=False, )
-    global_res = ray.available_resources()
-    pipe = CB2Pipeline('../../configs/cb2_DT/pipeline.config.yaml')
-    pipe.execute_clean()
-    ray.shutdown()
-    a = 0
+    parse_arguments()
+    entry_point('../../configs/cb2_DT/pipeline.config.yaml', 'procs_1')

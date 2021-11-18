@@ -1,6 +1,6 @@
 consumer:
   name: CB2Consumer
-  chunksize: 10000
+  chunksize: 1000
 
 data_sources:
   - name: 'CB2_5tzy'
@@ -84,7 +84,7 @@ transforms:
   save_locally:
     dir_location: "../../data/uncompressed/processed"
     dir_name: "big_cb2"
-    processes: 15
+    processes: 4
     partition_on_columns:
       - CB2_CAMP
       - CB2_beta_Arrestin
@@ -97,8 +97,8 @@ transforms:
 
 provider:
   name: CB2Provider
-  dataset_dir: '../../data/uncompressed/processed/big_cb2/concat_data'
-  processes: 16
+  dataset_dir: '../../data/uncompressed/processed/big_cb2/concat-data'
+  processes: 6
   dtype: float
   preview_frac: 0.01
   test_size: 0.05

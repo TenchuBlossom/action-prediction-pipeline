@@ -1,7 +1,21 @@
 pipeline:
+  name: 'cb2-pipeline'
   data_config: '../../configs/cb2_DT/data.config.yaml'
   train_config:  '../../configs/cb2_DT/trainable.config.yaml'
+
+save_options:
+  save_trainable: true
 
 performance_profile:
   name: 'multiprocess'
   overwrite_profile: false
+
+procedures:
+  procs_1:
+    - procedure_train
+    - procedure_persist
+    - procedure_diagnose
+
+  procs_2:
+    - procedure_fit
+    - procedure_diagnose

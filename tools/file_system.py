@@ -7,6 +7,8 @@ import inspect
 import sys
 from alive_progress import alive_bar
 import json
+import dill
+import gzip
 cs = Constants()
 
 
@@ -32,6 +34,32 @@ def path_exists(pathname, throw_exception=False) -> bool:
     return True
 
 
+def save_python_entity(pathname: str, class_instance: object, compress=True):
+
+    if compress:
+        with gzip.open(pathname, 'wb') as file:
+            dill.dump(class_instance, file)
+            print(f'\n File saved at {pathname}')
+            return
+
+    with open(pathname, 'wb') as file:
+        dill.dump(class_instance, file)
+        print(f'\n File saved at {pathname}')
+        return
+
+
+def load_python_entity(pathname: str, uncompress=True):
+
+    if uncompress:
+        with gzip.open(pathname, 'rb') as file:
+            loaded_class = dill.load(file)
+            return loaded_class
+
+    with open(pathname, 'rb') as file:
+        loaded_class = dill.load(file)
+        return loaded_class
+
+
 def touch(pathname, overwrite=False):
     if overwrite: delete_files([pathname])
     with open(pathname, 'a'):
@@ -46,10 +74,10 @@ def make_dir(pathname: str) -> str:
     return pathname
 
 
-def make_dir_chain(pathname: str, dir_chain: list) -> tuple:
+def make_dir_chain(pathname: str, dir_chain: list) -> str:
 
     for d in dir_chain:
-        _, pathname = make_dir(os.path.join(pathname, d))
+        pathname = make_dir(os.path.join(pathname, d))
 
     return pathname
 
