@@ -37,6 +37,7 @@ class Diagnostic:
                     pass
 
                 descriptives[score_name] = out
-                figure = dt.render_mpl_table(pd.DataFrame.from_dict(descriptives),  header_columns=0, col_width=2.0)
+                figure = dt.render_mpl_table(pd.DataFrame.from_dict(descriptives).round(2), size=(10, 5),
+                                             header_columns=0, col_width=2.0)
 
             return dict(descriptives=descriptives, figure=figure)

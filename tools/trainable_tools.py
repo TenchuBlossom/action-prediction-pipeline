@@ -3,6 +3,7 @@ import tools.file_system as fs
 from tools.constants import Constants
 from tqdm import tqdm
 import os
+import pandas as pd
 
 cs = Constants()
 
@@ -109,6 +110,10 @@ def persist_diagnostics(location: str, diagnostic_chain: dict):
             if item_key == 'figure':
                 item.savefig(os.path.join(dir_path, f'{item_key}.png'), format='png', dpi=300)
                 continue
+
+            if item_key == 'df_csv':
+               df = pd.DataFrame.from_dict(item)
+               df.to_csv(path_or_buf=os.path.join(dir_path, f'{item_key}.csv'))
 
             fs.save_python_entity(os.path.join(dir_path, f'{item_key}.diag'), item)
 
