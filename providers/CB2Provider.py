@@ -49,7 +49,7 @@ class Provider:
         with use_context.performance_profile("train_test_split"):
             # TODO shuffle & create train test splits
             if stratify:
-                train, test, _, _ = train_test_split(
+                train_virtual_matrix, test_virtual_matrix, _, _ = train_test_split(
                     virtual_dataset.drop([y_target], axis=1),
                     virtual_dataset[y_target],
                     test_size=test_size,
@@ -58,7 +58,7 @@ class Provider:
                     random_state=random_seed
                 )
             else:
-                train, test, _, _ = train_test_split(
+                train_virtual_matrix, test_virtual_matrix, _, _ = train_test_split(
                     virtual_dataset.drop([y_target], axis=1),
                     virtual_dataset[y_target],
                     test_size=test_size,
@@ -66,23 +66,16 @@ class Provider:
                     random_state=random_seed
                 )
 
-        features = train.columns
+        features = train_virtual_matrix.columns
         with use_context.performance_profile("compute_x_train"):
-            train = virtual_db.compute(train, dtype=dtype, processes=processes)
-            x_train = train.drop(y_names, axis=1)
-            y_train = train[y_target]
+            train_matrix, col_names = virtual_db.compute(train_virtual_matrix, dtype=dtype, processes=processes)
+            x_train = pyt.drop_columns_from_matrix(train_matrix, col_names, y_names)
+            y_train = pyt.keep_columns_from_matrix(train_matrix, col_names, y_target)
 
         with use_context.performance_profile("compute_x_test"):
-            test = virtual_db.compute(test, dtype=dtype, processes=processes)
-            x_test = test.drop(y_names, axis=1)
-            y_test = test[y_target]
-
-        if to_numpy:
-            x_train = x_train.to_numpy()
-            x_test = x_test.to_numpy()
-            y_train = y_train.to_numpy().flatten()
-            y_test = y_test.to_numpy().flatten()
-            features = features.to_numpy()
+            test_matrix, _ = virtual_db.compute(test_virtual_matrix, dtype=dtype, processes=processes)
+            x_test = pyt.drop_columns_from_matrix(test_matrix, col_names, y_names)
+            y_test = pyt.keep_columns_from_matrix(test_matrix, col_names, y_target)
 
         return x_train, x_test, y_train, y_test, features
 

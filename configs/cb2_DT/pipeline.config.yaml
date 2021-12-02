@@ -11,6 +11,9 @@ performance_profile:
   overwrite_profile: false
 
 procedures:
+  procs_0:
+    - procedure_preprocess
+
   procs_1:
     - procedure_train
     - procedure_persist
