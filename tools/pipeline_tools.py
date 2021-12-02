@@ -32,7 +32,7 @@ def compile_consumer(config: dict):
 
 def compile_trainable(config: dict):
 
-    trainable_name = pyt.get(config, [cs.trainable, cs.name])
+    trainable_name = pyt.get(config, [cs.trainable, 'program'])
 
     if not trainable_name: return None
 

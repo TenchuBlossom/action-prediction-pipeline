@@ -2,6 +2,7 @@ import tools.py_tools as pyt
 import tools.file_system as fs
 from tools.constants import Constants
 from tqdm import tqdm
+import os
 
 cs = Constants()
 
@@ -98,4 +99,17 @@ def execute_sync_diagnostics(results: dict, execution_chain: dict, print_txt='')
         diagnostics_results[name] = out
 
     return diagnostics_results
+
+
+def persist_diagnostics(location: str, diagnostic_chain: dict):
+    for key, diag in diagnostic_chain.items():
+        dir_path = fs.make_dir_chain(fs.path(os.path.join('../resources', location)), ['diagnostics', 'train', key])
+
+        for item_key, item in diag.items():
+            if item_key == 'figure':
+                item.savefig(os.path.join(dir_path, f'{item_key}.png'), format='png', dpi=300)
+                continue
+
+            fs.save_python_entity(os.path.join(dir_path, f'{item_key}.diag'), item)
+
 

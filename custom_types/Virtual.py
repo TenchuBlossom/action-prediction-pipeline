@@ -136,13 +136,13 @@ class VirtualDb:
 
         # indexes: list, partitions: list
         if processes > 1:
-            rows, cols = __distributed_compute__(virtual_matrix, self.partitions, processes)
+            matrix, column_names = __distributed_compute__(virtual_matrix, self.partitions, processes)
 
         else:
-            rows, cols = __sync_compute__(virtual_matrix, self.partitions)
+            matrix, column_names = __sync_compute__(virtual_matrix, self.partitions)
 
-        with alive_bar(title=f'Converting to dataframe', bar='classic') as bar:
-            df = pd.DataFrame(rows, columns=cols, dtype=dtype)
-            bar()
+        # with alive_bar(title=f'Converting to dataframe', bar='classic') as bar:
+        #     df = pd.DataFrame(rows, columns=cols, dtype=dtype)
+        #     bar()
 
-        return df
+        return np.asarray(matrix), column_names

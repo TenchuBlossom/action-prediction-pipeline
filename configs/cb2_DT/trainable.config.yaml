@@ -1,8 +1,8 @@
 
 trainable:
-  name: BetaTrainable
+  program: BetaTrainable
+  name: 'catboost'
   test_model: true
-  save_path:
 
   splitter:
     name: SK_RepeatedStratifiedKFold
@@ -44,6 +44,7 @@ diagnostics:
       confidence_interval: true
 
   Shaps:
+    disabled: true
     plot: true
 
 

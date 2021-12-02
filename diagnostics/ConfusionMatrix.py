@@ -43,8 +43,9 @@ class Diagnostic:
             if not plot or plot is None: return dict(confusion_matrix=confusion_matrix, figure=None)
 
             ax = sns.heatmap(confusion_matricies,
-                             annot=True,
-                             cbar=False)
+                                 annot=True,
+                                 cbar=False
+                             )
             plt.xlabel("True Label")
             plt.ylabel("Predicted Label")
             plt.title('confusion matrix')

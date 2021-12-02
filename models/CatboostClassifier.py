@@ -12,7 +12,7 @@ class Model(BaseEstimator, ClassifierMixin):
         self.y_preds = None
 
     def fit(self, x, y=None):
-        self.base_estimator.fit(x, y)
+        self.base_estimator.fit(x, y, verbose=False)
         self.y_preds = self.predict(x)
         self.y_true = y
         return self
