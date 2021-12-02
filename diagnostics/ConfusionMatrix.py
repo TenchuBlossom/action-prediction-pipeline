@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import use_context
+import tools.diagnostic_tools as dt
 
 
 # Median Confusion Matrix
@@ -42,16 +43,7 @@ class Diagnostic:
 
             if not plot or plot is None: return dict(confusion_matrix=confusion_matrix, figure=None)
 
-            ax = sns.heatmap(confusion_matricies,
-                                 annot=True,
-                                 cbar=False
-                             )
-            plt.xlabel("True Label")
-            plt.ylabel("Predicted Label")
-            plt.title('confusion matrix')
-            plt.close(ax.get_figure())
-            figure = ax.get_figure()
-
+            figure = dt.render_heatmap(confusion_matricies, x_label="True Label", y_label="Predicted Label", title="Confusion Matrix")
             return dict(confusion_matrix=confusion_matricies, figure=figure)
 
 
