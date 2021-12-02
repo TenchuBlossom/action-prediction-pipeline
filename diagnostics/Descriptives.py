@@ -1,6 +1,8 @@
 import tools.py_tools as pyt
 import numpy as np
 import use_context
+import tools.diagnostic_tools as dt
+import pandas as pd
 
 # Descriptives
 class Diagnostic:
@@ -35,5 +37,7 @@ class Diagnostic:
                     pass
 
                 descriptives[score_name] = out
+                figure = dt.render_mpl_table(pd.DataFrame.from_dict(descriptives).round(2), size=(10, 5),
+                                             header_columns=0, col_width=2.0)
 
-            return descriptives
+            return dict(descriptives=descriptives, figure=figure)
