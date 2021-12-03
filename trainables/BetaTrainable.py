@@ -45,6 +45,8 @@ class Trainable:
         with alive_bar(title="Executing Training Procedure", bar='classic') as bar:
             self.model.fit(x, y)
             self.fit_results = dict()
+            self.fit_results['y_preds'] = self.model.y_preds
+            self.fit_results['y_true'] = self.model.y_true
             self.fit_results['used_model'] = self.model
             self.fit_results['used_x_data'] = x
             self.fit_results['used_y_data'] = y
