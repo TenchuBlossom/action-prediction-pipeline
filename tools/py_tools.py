@@ -2,9 +2,15 @@ import time
 import numpy as np
 
 
+def delete_elements_from_array(array, drop_elements):
+    drop_indicies = np.where(np.isin(array, drop_elements))
+    array = np.delete(array, drop_indicies, 0)
+    return array
+
+
 def drop_columns_from_matrix(matrix, reference_array, col_names):
     if reference_array.ndim != 1:
-        raise ValueError('keep_columsn_from_matrix: Reference array must be a 1-D array')
+        raise ValueError('keep_columns_from_matrix: Reference array must be a 1-D array')
 
     drop_cols = np.where(np.isin(reference_array, col_names))
     matrix = np.delete(matrix, drop_cols, 1)

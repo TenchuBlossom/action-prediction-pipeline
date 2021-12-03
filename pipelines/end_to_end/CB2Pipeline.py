@@ -58,14 +58,19 @@ class CB2Pipeline:
         use_context.performance_profile.close()
 
     def procedure_train(self):
-        x_train, x_test, y_train, y_test, features = self.provider.provide()
+        providables = self.provider.provide()
 
-        self.trainable.train(x_train, y_train)
-        self.trainable.evaluate(x_test, y_test)
+        x_train = providables['x_train']
+        y_train = providables['y_train']
+        x_test = providables['x_test']
+        y_test = providables['y_test']
+        features = providables['features']
+        self.trainable.train(x_train, y_train, features)
+        self.trainable.evaluate(x_test, y_test, features)
 
     def procedure_fit(self):
-        x_all, _, y_all, _, features = self.provider.provide()
-        self.trainable.fit(x_all, y_all)
+        providables = self.provider.provide()
+        self.trainable.fit(x=providables['x_all'], y=providables['y_all'], features=providables['features'])
 
     def procedure_diagnose(self):
         self.trainable.diagnose(self.pipe_location)
@@ -96,4 +101,4 @@ def parse_arguments():
 if __name__ == "__main__":
     freeze_support()
     parse_arguments()
-    entry_point('../../configs/cb2_DT/pipeline.config.yaml', 'procs_1')
+    entry_point('../../configs/cb2_DT/pipeline.config.yaml', 'procs_2')
