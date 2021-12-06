@@ -9,6 +9,7 @@ class Diagnostic:
 
     def __init__(self, config):
         self.config = config
+        self.compatibility = ['train', 'evaluate', 'fit']
 
     def __call__(self, results):
 
@@ -40,4 +41,4 @@ class Diagnostic:
                 figure = dt.render_mpl_table(pd.DataFrame.from_dict(descriptives).round(2), size=(10, 5),
                                              header_columns=0, col_width=2.0)
 
-            return dict(descriptives=descriptives, figure=figure)
+            return dict(descriptives=descriptives, figures={'descriptives': figure})

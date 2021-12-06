@@ -101,7 +101,7 @@ provider:
   processes: 6
   dtype: float
   preview_frac: 0.01
-  test_size: 0.05
+  test_size: 0
   classes:
     - 0
     - 1

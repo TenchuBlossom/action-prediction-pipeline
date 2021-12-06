@@ -1021,16 +1021,19 @@
     },
     "CB2Provider.py": {
         "virtual_db": {
-            "_call_0": 3.5997140407562256
+            "_call_0": 3.5454766750335693
         },
         "train_test_split": {
-            "_call_0": 0.004000186920166016
+            "_call_0": 0.6905238628387451
         },
         "compute_x_train": {
             "_call_0": 0.7570216655731201
         },
         "compute_x_test": {
             "_call_0": 4.962277412414551
+        },
+        "compute_x_all_data": {
+            "_call_0": 0.6895232200622559
         }
     },
     "SK_CrossValidate.py": {
@@ -1043,12 +1046,17 @@
     },
     "ConfusionMatrix.py": {
         "full-process": {
-            "_call_0": 0.19341540336608887
+            "_call_0": 0.15726995468139648
         }
     },
     "Descriptives.py": {
         "full-process": {
             "_call_0": 0.027947187423706055
+        }
+    },
+    "Shaps.py": {
+        "full-process": {
+            "_call_0": 4.504470586776733
         }
     }
 }

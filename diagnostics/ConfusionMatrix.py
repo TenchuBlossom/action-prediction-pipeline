@@ -1,4 +1,4 @@
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix as make_confusion_matrix
 import tools.py_tools as pyt
 import tools.file_system as fs
 import numpy as np
@@ -34,16 +34,24 @@ class Diagnostic:
                     f"Diagnostic {fs.get_class_filename(self)}: len of y_preds is not equal to len of y_true"
                 )
 
-            confusion_matricies = []
-            for y_pred_fold, y_true_fold in zip(y_preds, y_true):
-                confusion_matricies.append(confusion_matrix(y_pred_fold, y_true_fold, normalize=normalize))
+            if len(y_preds) == 1 and len(y_true) == 1:
+                confusion_matrix = make_confusion_matrix(y_preds[0], y_true[0], normalize=normalize)
 
-            confusion_matricies = np.asarray(confusion_matricies)
-            confusion_matricies = np.median(confusion_matricies, axis=0)
+            elif len(y_preds) > 1 and len(y_true) > 1:
+                confusion_matrices = []
+                for y_pred_fold, y_true_fold in zip(y_preds, y_true):
+                    confusion_matrices.append(make_confusion_matrix(y_pred_fold, y_true_fold, normalize=normalize))
+
+                confusion_matrices = np.asarray(confusion_matrices)
+                confusion_matrix = np.median(confusion_matrices, axis=0)
+
+            else:
+                raise ValueError(f'ConfusionMatrix Error: y_preds Length {len(y_preds)}  y_true length {len(y_true)}'
+                                 f'Both arrays must be the same size and have a row size greater than 0.')
 
             if not plot or plot is None: return dict(confusion_matrix=confusion_matrix, figure=None)
 
-            figure = dt.render_heatmap(confusion_matricies, x_label="True Label", y_label="Predicted Label", title="Confusion Matrix")
-            return dict(confusion_matrix=confusion_matricies, figure=figure)
+            figure = dt.render_heatmap(confusion_matrix, x_label="True Label", y_label="Predicted Label", title="Confusion Matrix")
+            return dict(confusion_matrix=confusion_matrix, figures={'confusion-matrix': figure})
 
 

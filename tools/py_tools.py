@@ -2,9 +2,15 @@ import time
 import numpy as np
 
 
+def delete_elements_from_array(array, drop_elements):
+    drop_indicies = np.where(np.isin(array, drop_elements))
+    array = np.delete(array, drop_indicies, 0)
+    return array
+
+
 def drop_columns_from_matrix(matrix, reference_array, col_names):
     if reference_array.ndim != 1:
-        raise ValueError('keep_columsn_from_matrix: Reference array must be a 1-D array')
+        raise ValueError('keep_columns_from_matrix: Reference array must be a 1-D array')
 
     drop_cols = np.where(np.isin(reference_array, col_names))
     matrix = np.delete(matrix, drop_cols, 1)
@@ -21,6 +27,8 @@ def keep_columns_from_matrix(matrix, reference_array, col_names):
 
 
 def get(input_data: dict, keys: list, default=None):
+
+    if input_data is None: return default
 
     data = input_data
     for key in keys:
@@ -43,6 +51,13 @@ def put(input_dict: dict, value, key_chain: list):
         put(input_dict[key], value, key_chain)
 
     return input_dict
+
+
+def expand_0D_np_array(array):
+
+    if len(array.shape) > 1: return array
+    return np.expand_dims(array, axis=1)
+
 
 
 def timeit(function, return_output=False):

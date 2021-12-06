@@ -15,8 +15,10 @@ trainable:
     name: SK_CrossValidate
     parameters:
       n_jobs: -1
-      scoring:
-        - MCC
+      return_train_score: true
+
+  scorers:
+    - MCC
 
   model:
     name: CatboostClassifier
@@ -37,6 +39,7 @@ diagnostics:
 
   Descriptives:
     parameters:
+      compatibility: ["proc_1"]
       plot: true
       mean: true
       median: true
