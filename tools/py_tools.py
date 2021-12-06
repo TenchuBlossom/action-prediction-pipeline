@@ -28,6 +28,8 @@ def keep_columns_from_matrix(matrix, reference_array, col_names):
 
 def get(input_data: dict, keys: list, default=None):
 
+    if input_data is None: return default
+
     data = input_data
     for key in keys:
         data = data.get(key, default)
@@ -49,6 +51,13 @@ def put(input_dict: dict, value, key_chain: list):
         put(input_dict[key], value, key_chain)
 
     return input_dict
+
+
+def expand_0D_np_array(array):
+
+    if len(array.shape) > 1: return array
+    return np.expand_dims(array, axis=1)
+
 
 
 def timeit(function, return_output=False):

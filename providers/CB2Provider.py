@@ -40,7 +40,8 @@ class Provider:
         processes = self.config.get('processes', 1)
 
         # TODO Load in data
-        outputs = dict(x_train=None, x_test=None, y_train=None, y_test=None, x_all=None, y_all=None, features=None)
+        outputs = dict(x_train=None, x_test=None, y_train=None, y_test=None, features=None)
+
         with use_context.performance_profile("virtual_db"):
             virtual_db = VirtualDb(dataset_dir)
             virtual_db.anchor()
@@ -55,14 +56,13 @@ class Provider:
 
                 # features = train_virtual_matrix.columns
                 with use_context.performance_profile("compute_x_all_data"):
-                    all_matrix, col_names = virtual_db.compute(all_virtual_matrix, dtype=dtype, processes=processes)
-                    x_all = pyt.drop_columns_from_matrix(all_matrix, col_names, y_names)
-                    y_all = pyt.keep_columns_from_matrix(all_matrix, col_names, y_target)
+                    train_matrix, col_names = virtual_db.compute(all_virtual_matrix, dtype=dtype, processes=processes)
+                    x_train = pyt.drop_columns_from_matrix(train_matrix, col_names, y_names)
+                    y_train = pyt.keep_columns_from_matrix(train_matrix, col_names, y_target)
                     features = pyt.delete_elements_from_array(col_names, y_names)
-                    outputs.update(dict(x_all=x_all, y_all=y_all, features=features))
+                    outputs.update(dict(x_train=x_train, y_train=y_train, features=features))
 
                 return outputs
-
 
             if stratify:
                 train_virtual_matrix, test_virtual_matrix, _, _ = train_test_split(

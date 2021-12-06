@@ -14,15 +14,22 @@ cs = Constants()
 
 class CB2Pipeline:
 
-    def __init__(self, config_src: str):
+    def __init__(self, config_src: str, procedure):
 
         self.config = fs.compile_config(config_src)
         self.data_config = fs.compile_config(self.config['pipeline']['data_config'])
         self.trainable_config = fs.compile_config(self.config['pipeline']['train_config'])
+        self.procedure_list = pyt.get(self.config, ['procedures', procedure], [])
 
         self.consumer = pt.compile_consumer(self.data_config)
         self.provider = pt.compile_provider(self.data_config)
-        self.trainable = pt.compile_trainable(self.trainable_config)
+        self.trainable = pt.compile_trainable(
+            pyt.put(
+                input_dict=self.trainable_config,
+                value={'name': procedure, 'methods': self.procedure_list},
+                key_chain=['procedure']
+            )
+        )
 
         use_context.performance_profile = PerformanceProfile(self.config['performance_profile'])
 
@@ -31,10 +38,9 @@ class CB2Pipeline:
             ['pipelines', pyt.get(self.config, ['pipeline', 'name'], 'pipeline')]
         )
 
-    def execute_procedures(self, procedure):
-        procedure_list = pyt.get(self.config, ['procedures', procedure], [])
+    def execute_procedures(self):
 
-        for proc_key in procedure_list:
+        for proc_key in self.procedure_list:
             procedure_method = getattr(self, proc_key)
             procedure_method()
 
@@ -70,7 +76,11 @@ class CB2Pipeline:
 
     def procedure_fit(self):
         providables = self.provider.provide()
-        self.trainable.fit(x=providables['x_all'], y=providables['y_all'], features=providables['features'])
+
+        x_train = providables['x_train']
+        y_train = providables['y_train']
+        features = providables['features']
+        self.trainable.fit(x=x_train, y=y_train, features=features)
 
     def procedure_diagnose(self):
         self.trainable.diagnose(self.pipe_location)
@@ -86,8 +96,8 @@ class CB2Pipeline:
 
 def entry_point(config: str, procedure: str):
     ray.init(log_to_driver=False)
-    pipe = CB2Pipeline(config)
-    pipe.execute_procedures(procedure)
+    pipe = CB2Pipeline(config, procedure)
+    pipe.execute_procedures()
     # trainable = fs.load_class_instance(fs.path('../../resources/pipelines/CB2Pipeline.pipe'), uncompress=False)
     # trainable.diagnose()
     ray.shutdown()

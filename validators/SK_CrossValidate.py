@@ -12,14 +12,14 @@ class Validator:
         self.config = config
 
     # TODO Validators need to return the results of each fold, the model y_predictions and y_trues
-    def __call__(self, model, x, y) -> dict:
+    def __call__(self, model, scorers, x, y) -> dict:
 
         # TODO need to organise data into consistent format
         with use_context.performance_profile("cross-validation"):
-            scores = cross_validate(model, x, y, **self.config)
+            scores = cross_validate(model, x, y, scoring=scorers, **self.config)
 
         with use_context.performance_profile("validator-post-processing"):
-            scorer_names = list(pyt.get(self.config, ['scoring']).keys())
+            scorer_names = list(scores.keys())
             results = dict(scores=dict(), y_preds=[], y_true=[])
 
             # extract the score results from sklearn

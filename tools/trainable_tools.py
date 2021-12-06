@@ -33,7 +33,6 @@ def compile_validator(config: dict, splitter):
         parameters = pyt.put(parameters, True, ['return_estimator'])
 
     parameters = pyt.put(parameters, splitter.splitter, ['cv'])
-    parameters = pyt.put(parameters, compile_scorers(config), ['scoring'])
 
     validator = fs.load_module(module_uri=f'{cs.validators_uri}{validator_name}',
                                class_name=cs.Validator, config=parameters)
@@ -54,9 +53,9 @@ def compile_model(config: dict):
     return model
 
 
-def compile_scorers(config: dict):
+def compile_scorers(config: dict, sklearn_compatible=False):
 
-    scoring = pyt.get(config, [cs.trainable, cs.validator, cs.parameters, 'scoring'])
+    scoring = pyt.get(config, [cs.trainable, cs.scorers])
 
     if not scoring: return None
 
@@ -65,7 +64,12 @@ def compile_scorers(config: dict):
 
         if module is None: continue
         module = module.__dict__[cs.Scorer]
-        module = module().scorer
+
+        if sklearn_compatible:
+            module = module().compiled_scorer
+        else:
+            module = module().scorer
+
         scorer_chain[module_name] = module
 
     print(f'{cs.tickIcon} Scorers successfully compiled')
@@ -77,6 +81,7 @@ def compile_diagnostics(config: dict):
     diagnostics = pyt.get(config, [cs.diagnostics])
 
     if not diagnostics: return None
+    current_procedure = pyt.get(config, ['procedure', 'name'])
 
     diagnostic_chain = []
     for module, module_name in fs.LoadPythonPackage(list(diagnostics.keys()), package_name=cs.diagnostics):
@@ -84,6 +89,12 @@ def compile_diagnostics(config: dict):
         if module is None: continue
         module = module.__dict__[cs.Diagnostic]
         parameters = pyt.get(diagnostics, [module_name, 'parameters'])
+        compatibility = pyt.get(parameters, ['compatibility'])
+
+        if compatibility is not None and current_procedure not in compatibility:
+            # if this diagnostic is not compatible with the current procedure then dont add it
+            continue
+
         module = module(parameters)
         diagnostic_chain.append(module)
 
@@ -107,8 +118,9 @@ def persist_diagnostics(location: str, diagnostic_chain: dict):
         dir_path = fs.make_dir_chain(fs.path(os.path.join('../resources', location)), ['diagnostics', 'train', key])
 
         for item_key, item in diag.items():
-            if item_key == 'figure':
-                item.savefig(os.path.join(dir_path, f'{item_key}.png'), format='png', dpi=300)
+            if item_key == 'figures':
+                for fig_name, fig in item.items():
+                    fig.savefig(os.path.join(dir_path, f'{fig_name}.png'), format='png', dpi=300)
                 continue
 
             fs.save_python_entity(os.path.join(dir_path, f'{item_key}.diag'), item)
