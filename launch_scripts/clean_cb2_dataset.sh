@@ -28,6 +28,7 @@ source ${VENV_PATH}/bin/activate
 # install python dependencies
 pip install pyyaml
 pip install catboost
+pip install shap
 pip install ray
 pip install hiredis
 pip install matplotlib
