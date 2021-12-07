@@ -64,23 +64,25 @@ class CB2Pipeline:
         use_context.performance_profile.close()
 
     def procedure_train(self):
-        providables = self.provider.provide()
+        with use_context.performance_profile("procedure-train"):
+            providables = self.provider.provide()
 
-        x_train = providables['x_train']
-        y_train = providables['y_train']
-        x_test = providables['x_test']
-        y_test = providables['y_test']
-        features = providables['features']
-        self.trainable.train(x_train, y_train, features)
-        self.trainable.evaluate(x_test, y_test, features)
+            x_train = providables['x_train']
+            y_train = providables['y_train']
+            x_test = providables['x_test']
+            y_test = providables['y_test']
+            features = providables['features']
+            self.trainable.train(x_train, y_train, features)
+            self.trainable.evaluate(x_test, y_test, features)
 
     def procedure_fit(self):
-        providables = self.provider.provide()
+        with use_context.performance_profile("procedure-fit"):
+            providables = self.provider.provide()
 
-        x_train = providables['x_train']
-        y_train = providables['y_train']
-        features = providables['features']
-        self.trainable.fit(x=x_train, y=y_train, features=features)
+            x_train = providables['x_train']
+            y_train = providables['y_train']
+            features = providables['features']
+            self.trainable.fit(x=x_train, y=y_train, features=features)
 
     def procedure_diagnose(self):
         self.trainable.diagnose(self.pipe_location)
@@ -95,7 +97,9 @@ class CB2Pipeline:
 
 
 def entry_point(config: str, procedure: str):
+    print('Initialising Ray Local Cluster...')
     ray.init(log_to_driver=False)
+    print('Ray Local Successfully Activated...')
     pipe = CB2Pipeline(config, procedure)
     pipe.execute_procedures()
     # trainable = fs.load_class_instance(fs.path('../../resources/pipelines/CB2Pipeline.pipe'), uncompress=False)

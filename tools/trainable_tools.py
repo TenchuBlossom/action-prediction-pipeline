@@ -4,6 +4,7 @@ from tools.constants import Constants
 from tqdm import tqdm
 import os
 import pandas as pd
+import use_context
 
 cs = Constants()
 
@@ -107,8 +108,10 @@ def execute_sync_diagnostics(results: dict, execution_chain: dict, print_txt='')
     diagnostics_results = dict()
     for diagnostic in tqdm(execution_chain, desc=f"{cs.tickIcon} {print_txt}", colour="WHITE"):
         name = fs.get_class_filename(diagnostic)
-        out = diagnostic(results)
-        diagnostics_results[name] = out
+
+        with use_context.performance_profile(name, filename="diagnostics"):
+            out = diagnostic(results)
+            diagnostics_results[name] = out
 
     return diagnostics_results
 

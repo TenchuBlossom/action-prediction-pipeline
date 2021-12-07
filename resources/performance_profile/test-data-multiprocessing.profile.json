@@ -1,0 +1,31 @@
+{
+    "CB2Provider.py": {
+        "virtual_db": {
+            "_call_0": 4.432003021240234
+        },
+        "compute_x_all_data": {
+            "_call_0": 2.7666285037994385
+        },
+        "train_test_split": {
+            "_call_0": 2.7666285037994385
+        }
+    },
+    "CB2Pipeline.py": {
+        "procedure-fit": {
+            "_call_0": 11.906515836715698
+        }
+    },
+    "ConfusionMatrix.py": {
+        "full-process": {
+            "_call_0": 0.23428082466125488
+        }
+    },
+    "diagnostics": {
+        "ConfusionMatrix": {
+            "_call_0": 0.23428082466125488
+        },
+        "Shaps": {
+            "_call_0": 4.701065301895142
+        }
+    }
+}
