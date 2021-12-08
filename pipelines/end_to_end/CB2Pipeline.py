@@ -42,6 +42,7 @@ class CB2Pipeline:
 
         for proc_key in self.procedure_list:
             procedure_method = getattr(self, proc_key)
+            print(f'Executing Procedure: {proc_key}... \n')
             procedure_method()
 
         self.procedure_shutdown()
@@ -98,7 +99,7 @@ class CB2Pipeline:
 
 def entry_point(config: str, procedure: str):
     print('Initialising Ray Local Cluster...')
-    ray.init(log_to_driver=False)
+    ray.init(log_to_driver=False, include_dashboard=False, )
     print('Ray Local Successfully Activated...')
     pipe = CB2Pipeline(config, procedure)
     pipe.execute_procedures()

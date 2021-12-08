@@ -116,7 +116,7 @@ class VirtualDb:
 
             for length, (val_name, value) in zip(ratios, content.items()):
                 value['length'] = length
-                value['ratio'] = round(length / r_sum, 2)
+                value['ratio'] = length / r_sum
 
             round_check = sum([value['ratio'] for _, value in content.items()])
             if round_check != 1.0:
