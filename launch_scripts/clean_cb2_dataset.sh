@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --ntasks 20
+#SBATCH --ntasks 40
 #SBATCH --nodes 1
-#SBATCH --time 25:0
+#SBATCH --time 1-1:0:0
 #SBATCH --mail-type ALL
 
 set -e
@@ -29,6 +29,7 @@ source ${VENV_PATH}/bin/activate
 pip install pyyaml
 pip install catboost
 pip install shap
+pip install dill
 pip install ray
 pip install hiredis
 pip install matplotlib

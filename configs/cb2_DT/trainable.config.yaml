@@ -7,7 +7,7 @@ trainable:
   splitter:
     name: SK_RepeatedStratifiedKFold
     parameters:
-      n_splits: 5
+      n_splits: 10
       n_repeats: 3
       random_state: 42
 

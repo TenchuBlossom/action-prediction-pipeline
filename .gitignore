@@ -105,6 +105,7 @@ celerybeat.pid
 .env
 .venv
 env/
+envs/
 venv/
 ENV/
 env.bak/
@@ -131,6 +132,12 @@ dmypy.json
 # data source
 /data
 
+# pycharm
 .idea/
 
+# ask outputs
 /dask-worker-space
+
+# bluebear outputs
+slurm*.out
+slurm*.stats
